@@ -5,7 +5,8 @@
     let monthlyPayIn = '0';
     let monthlyPayOut = '0';
     let currentAge = '18';
-    let targetrRetireAge = '60'
+    let targetRetireAge = '60'
+    $:yearsTillRetire = parseInt(targetRetireAge) - parseInt(currentAge)
 </script>
 
 <style>
@@ -16,31 +17,77 @@
 }
 
 .harold-form {
-    width: 50px
+    width: 50px;
 }
+
+#harold-ages {
+    border-bottom: #616161 solid 1px;
+}
+
+label {
+    font-size: 20px;
+    margin: 10px 0 10px 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: 1px solid #ffffff;
+    height: 18px;
+    width: 18px;
+    border-radius: 2px;
+    background: #ff2968;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #616161, 0px 0px 1px #0d0d0d; 
+}
+
 </style>
 
+<section>
+    <h1> Explore your pension plan </h1>
 
-<h1> Explore your pension plan </h1>
+    <h4 id='account'>{($wallet.address && $wallet.status == 'Ready') ? $wallet.address : 'Web3 account not available'}</h4>
 
-<h4 id='account'>{($wallet.address && $wallet.status == 'Ready') ? $wallet.address : 'Web3 account not available'}</h4>
+    <div id="harold-ages" class="d-flex flex-row justify-content-around py-3">
+        <div class="d-flex flex-column mb-3 align-items-start">
+        <h3 class="bd-highlight">Your age</h3>
+        <input type="text" class="harold-form" bind:value={currentAge}>
+        </div>
 
-<h3> Some details about you: </h3>
-
-<form>
-  <div class="form-group row">
-    <label for="form-age" class="col-sm-2 col-form-label">Your Age:</label>
-    <div class="col-sm-10">
-      <input type="text" class="harold-form" id="form-age" bind:value={currentAge}>
+        <div class="d-flex flex-column mb-3 align-items-start">
+        <h3 class="bd-highlight">Retirement age</h3>
+        <input type="text" class="harold-form" bind:value={targetRetireAge}>
+        </div>
     </div>
-  </div>
-</form>
 
-<label for="monthlyPayInRange">Monthly Pay In Range</label>
-<input bind:value={monthlyPayIn} type="range" class="custom-range" id="monthlyPayInRange" 
-    min="0" 
-    max="1000">
+</section>
+
+
+<section class="py-3 d-flex flex-column align-items-center">
+
+    <div class="d-flex flex-row justify-content-start align-items-center my-2">
+        <span style="font-size: 27px; color: #ff2968; padding-right: 10px">
+            <i class="fa fa-wallet"></i>
+        </span>
+        <label for="monthlyPayInRange">Monthly Pay In</label>
+    </div>
+
+    <input bind:value={monthlyPayIn} type="range" class="custom-range" id="monthlyPayInRange" 
+        min="0" max="1000">
+
+    <h2 class="py-4 "><em> ----- After {yearsTillRetire} years ----- </em></h2>
+
+    <div class="d-flex flex-row justify-content-start align-items-center my-2">
+        <span style="font-size: 27px; color: #ff2968; padding-right: 10px">
+        <i class="fa fa-money-bill-alt"></i>
+        </span>
+        <label for="monthlyPayInRange">Monthly Pay Out</label>
+    </div>
+
+    <input bind:value={monthlyPayOut} type="range" class="custom-range" id="monthlyPayInRange" 
+        min="0" max="100000">
+
+</section>
 
 <p>{monthlyPayIn}</p>
 
-<button on:click="{() => eth.createAndMint(ipfsURI)}">Mint</button>
+<!-- <button on:click="{() => eth.createAndMint(ipfsURI)}">Mint</button> -->
