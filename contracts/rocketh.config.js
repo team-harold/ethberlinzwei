@@ -5,4 +5,7 @@ module.exports = {
             num: 10,
         },
     },
+    ganacheOptions: {
+        blockTime: 6
+    },
 };
