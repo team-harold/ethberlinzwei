@@ -1,0 +1,19 @@
+{
+  "name": "ethberlinzwei-contracts",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test-localhost": "rocketh launch -n http://localhost:8545 tap -T -j 1 -R spec test/**/test*",
+    "test": "rocketh launch tap -T -j 1 -R spec test/**/test*",
+    "smartcheck": "smartcheck -p ."
+  },
+  "dependencies": {
+    "ethers": "^4.0.36",
+    "ganache-core": "^2.7.0",
+    "rocketh": "^0.2.41",
+    "rocketh-ethers": "^0.0.1",
+    "solc": "^0.5.11",
+    "tap": "^14.6.1"
+  }
+}

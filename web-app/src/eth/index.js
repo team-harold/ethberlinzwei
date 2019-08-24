@@ -27,10 +27,10 @@ export default {
     },
 
     register: async (ipfsURI, numNFTs, moreLater) => {
-        if (contracts.WelFareFund) {
-            console.log(contracts.WelFareFund.address, ipfsURI, numNFTs, moreLater);
+        if (contracts.WelfareFund) {
+            console.log(contracts.WelfareFund.address, ipfsURI, numNFTs, moreLater);
         } else {
-            throw ('no contract WelFareFund setup');
+            throw ('no contract WelfareFund setup');
         }
 
     }
