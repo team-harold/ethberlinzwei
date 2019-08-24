@@ -12,7 +12,7 @@ var i = 0.05
 
 function payOutPerMonth(_retirementAge, _currentAge, _payInPerMonth, lifeTable){
   var payInMonthly = Number(_payInPerMonth);
-  Utilities.sleep(100)
+  
   var EVP_Out_x = PresentValueImmediateAnnuity(_retirementAge, i, lifeTable.length, lifeTable)
   var EVP_Out = PresentV(_retirementAge - _currentAge,  i) * EVP_Out_x
   var EVP_In = PresentValueImmediateAnnuity(_currentAge, i, _retirementAge, lifeTable)
@@ -21,7 +21,6 @@ function payOutPerMonth(_retirementAge, _currentAge, _payInPerMonth, lifeTable){
 }
 
 function payInPerMonth(_retirementAge, _currentAge, _payOutPerMonth, lifeTable){
-  Utilities.sleep(100)
   var payOutMonthly = Number(_payOutPerMonth);
   var EVP_Out_x = PresentValueImmediateAnnuity(_retirementAge, i, lifeTable.length, lifeTable)
   var EVP_Out = PresentV(_retirementAge - _currentAge, i) * EVP_Out_x
