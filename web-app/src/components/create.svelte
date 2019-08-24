@@ -2,7 +2,7 @@
     import wallet from '../stores/wallet';
     import eth from '../eth';
     import annuity from '../math/annuity';
-    import Modal from '../components/Modal.svelte';
+    import Modal from './Modal.svelte';
     import { beforeUpdate, afterUpdate } from 'svelte';
 
     let monthlyPayIn = 12;
@@ -40,10 +40,6 @@
 
 <style>
 
-.create-section {
-    padding: 0em 2em 0 2em
-}
-
 .harold-form {
     width: 50px;
 }
@@ -67,13 +63,13 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
     box-shadow: 1px 1px 1px #616161, 0px 0px 1px #0d0d0d; 
 }
-    </style>
+</style>
 
 <header>
     <img alt="Transit" class="logo-img" src="logo_invert.png">
 </header>
 
-<section class="create-section">
+<section class="action-section">
     <h1> Your pension plan </h1>
 
     <div class="d-flex flex-row align-items-center mb-1">
@@ -99,7 +95,7 @@ input[type="range"]::-webkit-slider-thumb {
 </section>
 
 
-<section class="py-3 d-flex flex-column justify-content-between create-section">
+<section class="py-3 d-flex flex-column justify-content-between action-section">
 
     <div class="d-flex flex-row align-items-center mb-1">
         <span style="font-size: 20px; color: #00e8d5; padding-right: 10px">
@@ -131,7 +127,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 {#if loadingTransaction}
 	<Modal on:close="{() => loadingTransaction = false}">
-		<h4 slot="header"> Pending Transation</h4>
+		<h4 slot="header">You are paying for the first installment</h4>
         <div class="progress">
             <div class="progress-bar progress-bar-striped progress-bar-animated" 
                 role="progressbar" 

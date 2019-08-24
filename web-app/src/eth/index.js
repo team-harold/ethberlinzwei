@@ -43,13 +43,10 @@ export default {
         timeRetire: new Data().toDateSting()};
     },
     claimPayOut: () => {return {
-        nextPayoutDueOn: new Date().toDateString,
-        payoutAmount: 740,
-        totalAmountPaid: 4000};
+        payoutAmount: 740};
     },
     isJoined: () => {return {
-        joined: true,
-        status: 'retired' //paying, pending
+        status: 'dead' //paying, dead, null
     };
     },
 };
