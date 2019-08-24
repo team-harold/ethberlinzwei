@@ -32,5 +32,20 @@ export default {
         } else {
             throw ('no contract WelfareFund setup');
         }
-    }
+    },
+
+    payIn: () => {return { 
+        nexyPaymentDueOn: new Date().toDateString(),
+        amountDue: 500,
+        penaltyDue: 5,
+        amountPaid: 1500,
+        timeRetire: new Data().toDateSting()};
+    },
+    claimPayOut: () => {return {
+        payoutAmount: 740};
+    },
+    isJoined: () => {return {
+        status: 'dead' //paying, dead, null
+    };
+    },
 };
