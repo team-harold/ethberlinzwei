@@ -1,12 +1,32 @@
 <script>
     import wallet from '../stores/wallet';
     import eth from '../eth';
-    import math from '../math/annuity';
-    let monthlyPayIn = '0';
-    let monthlyPayOut = '0';
-    let currentAge = '18';
-    let targetRetireAge = '60'
-    $:yearsTillRetire = parseInt(targetRetireAge) - parseInt(currentAge)
+    import annuity from '../math/annuity';
+    import { beforeUpdate, afterUpdate } from 'svelte';
+
+    let monthlyPayIn = 0;
+    let monthlyPayOut = 0;
+    let joiningAge = 18;
+    let targetRetireAge = 60
+    $:yearsTillRetire = parseInt(targetRetireAge) - parseInt(joiningAge)
+
+    let last_monthlyPayIn = 0;
+    let last_monthlyPayOut = 0;
+
+    afterUpdate(() => {
+        if (last_monthlyPayIn != monthlyPayIn) {
+            monthlyPayOut = annuity.payOutPerMonth(retirementAge, joiningAge, monthlyPayIn);
+        } else if (last_monthlyPayOut != last_monthlyPayOut) {
+            monthlyPayIn = annuity.payInPerMonth(retirementAge, joiningAge, monthlyPayOut);
+        } else {
+            monthlyPayIn = annuity.payInPerMonth(retirementAge, joiningAge, monthlyPayOut);
+        }
+        last_monthlyPayIn = monthlyPayIn;
+        last_monthlyPayOut = monthlyPayOut;
+
+        console.log({ retirementAge, joiningAge, monthlyPayIn, monthlyPayOut });
+    });
+
 </script>
 
 <style>
@@ -50,7 +70,7 @@ input[type="range"]::-webkit-slider-thumb {
     <div id="harold-ages" class="d-flex flex-row justify-content-around py-3">
         <div class="d-flex flex-column mb-3 align-items-start">
         <h3 class="bd-highlight">Your age</h3>
-        <input type="text" class="harold-form" bind:value={currentAge}>
+        <input type="text" class="harold-form" bind:value={joiningAge}>
         </div>
 
         <div class="d-flex flex-column mb-3 align-items-start">
@@ -88,6 +108,5 @@ input[type="range"]::-webkit-slider-thumb {
 
 </section>
 
-<p>{monthlyPayIn}</p>
 
-<!-- <button on:click="{() => eth.createAndMint(ipfsURI)}">Mint</button> -->
+<button on:click="{() => eth.joinDAO()}">Create Your Plan</button>
