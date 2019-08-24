@@ -6,14 +6,14 @@ contract Ankou is DeathOracle {
 
     struct Config {
         uint128 dieSize;
-        uint8 everyXBlock;
+        uint16 everyXBlock;
     }
 
     Config config;
 
     mapping(uint256 => bytes32) blockHashes;
 
-    constructor(uint128 dieSize, uint8 everyXBlock) public {
+    constructor(uint128 dieSize, uint16 everyXBlock) public {
         config.dieSize = dieSize;
         config.everyXBlock = everyXBlock;
     }
