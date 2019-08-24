@@ -4,6 +4,7 @@
     import annuity from '../math/annuity';
     import Modal from './Modal.svelte';
     import { beforeUpdate, afterUpdate } from 'svelte';
+    export let message;
 </script>
 
 <style>
@@ -14,9 +15,6 @@ h5 {
     margin: 0
 }
 
-#payin-btn {
-    border-bottom: 1px solid #f2f2fa;
-}
 
 </style>
 
@@ -26,10 +24,16 @@ h5 {
 
 <section class="d-flex flex-column action-section">
 
-    <div class="d-flex flex-column align-items-center my-3">
-        <h1>😵</h1>
-        <h4>Looks like you might not be alive anymore</h4>
-    </div>
+        <h3>🤹‍♂️ {message}</h3>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                role="progressbar" 
+                aria-valuenow="100" 
+                aria-valuemin="0" 
+                aria-valuemax="100" 
+                style="width: 100%; background-color:  #ff2968">
+            </div>
+        </div>
 
 </section>
 

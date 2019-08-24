@@ -5,14 +5,12 @@
     import Create from '../components/create.svelte';
     import Pay from '../components/pay.svelte';
     import Dead from '../components/dead.svelte';
+    import Pending from '../components/pending.svelte';
     import { onMount, beforeUpdate, afterUpdate } from 'svelte';
 
     async function fetchPendingTransactions() {
         let s = await eth.isJoined()
         return s.status
-        // return 'paying'
-        // return 'retired'
-        // return 'dead'
     }
     let userStatus = ''
 
@@ -26,11 +24,13 @@
 
 {#if userStatus == 'new'}
 	<Create/>
+{:else if userStatus == "pending"}
+	<Pending message={"mined transaction..."}/>
 {:else if userStatus == "paying"}
 	<Pay status={"paying"}/>
 {:else if userStatus == "retired"}
 	<Pay status={"retired"}/>
 {:else}
-	<Dead></Dead>
+	<Dead/>
 {/if}
 
