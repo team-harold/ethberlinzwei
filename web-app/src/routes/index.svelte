@@ -6,35 +6,37 @@
 
     let monthlyPayIn = 0;
     let monthlyPayOut = 0;
-    let joiningAge = 18;
-    let targetRetireAge = 60
-    $:yearsTillRetire = parseInt(targetRetireAge) - parseInt(joiningAge)
-
+    let inputJoiningAge = 18;
+    let inputRetirementAge = 60;
     let last_monthlyPayIn = 0;
     let last_monthlyPayOut = 0;
 
+    $:isValidRetirementAge = inputRetirementAge > inputJoiningAge ? 
+    '' : 'border: 1px solid  #ff2968; color: #ff2968;' 
+    $:ytr = parseInt(inputRetirementAge) - parseInt(inputJoiningAge)
+    $:yearsTillRetire = ytr > 0 ? 'After ' + ytr + ' years...' :  'Invalid age selection'
+
+
     afterUpdate(() => {
+        inputJoiningAge = inputJoiningAge > 1 ? inputJoiningAge : 1;
+        let joiningAge = inputJoiningAge > 1 ? inputJoiningAge : 1;
+        let retirementAge = inputRetirementAge > inputJoiningAge ? inputRetirementAge : joiningAge;
+  
         if (last_monthlyPayIn != monthlyPayIn) {
             monthlyPayOut = annuity.payOutPerMonth(retirementAge, joiningAge, monthlyPayIn);
         } else if (last_monthlyPayOut != last_monthlyPayOut) {
             monthlyPayIn = annuity.payInPerMonth(retirementAge, joiningAge, monthlyPayOut);
         } else {
-            monthlyPayIn = annuity.payInPerMonth(retirementAge, joiningAge, monthlyPayOut);
+            let mpi = annuity.payInPerMonth(retirementAge, joiningAge, monthlyPayOut)
+            monthlyPayIn = isNaN(mpi) ? last_monthlyPayIn : mpi;
         }
         last_monthlyPayIn = monthlyPayIn;
         last_monthlyPayOut = monthlyPayOut;
-
-        console.log({ retirementAge, joiningAge, monthlyPayIn, monthlyPayOut });
     });
 
 </script>
 
 <style>
-#account {
-    background: url(account.png) no-repeat left;
-    background-size: 15px 15px;
-    padding-left: 21px;
-}
 
 .harold-form {
     width: 50px;
@@ -59,54 +61,61 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
     box-shadow: 1px 1px 1px #616161, 0px 0px 1px #0d0d0d; 
 }
-
-</style>
+    </style>
 
 <section>
     <h1> Explore your pension plan </h1>
 
-    <h4 id='account'>{($wallet.address && $wallet.status == 'Ready') ? $wallet.address : 'Web3 account not available'}</h4>
+    <div class="d-flex flex-row align-items-center mb-1">
+        <span style="font-size: 15px; color: #00e8d5; padding-right: 10px">
+            <i class="fas fa-user-astronaut"></i>
+        </span>
+        <h4 id='account'>
+        {($wallet.address && $wallet.status == 'Ready') ? $wallet.address : 'Web3 account not available'}</h4>
+    </div>
 
-    <div id="harold-ages" class="d-flex flex-row justify-content-around py-3">
+    <form id="harold-ages" class="d-flex flex-row justify-content-between py-3">
         <div class="d-flex flex-column mb-3 align-items-start">
         <h3 class="bd-highlight">Your age</h3>
-        <input type="text" class="harold-form" bind:value={joiningAge}>
+        <input type="text" class="harold-form" style="" bind:value={inputJoiningAge}>
         </div>
 
         <div class="d-flex flex-column mb-3 align-items-start">
         <h3 class="bd-highlight">Retirement age</h3>
-        <input type="text" class="harold-form" bind:value={targetRetireAge}>
+        <input type="text" class="harold-form" style="{isValidRetirementAge}" bind:value={inputRetirementAge}>
         </div>
-    </div>
+    </form>
 
 </section>
 
 
-<section class="py-3 d-flex flex-column align-items-center">
+<section class="py-3 d-flex flex-column justify-content-between">
 
-    <div class="d-flex flex-row justify-content-start align-items-center my-2">
-        <span style="font-size: 27px; color: #ff2968; padding-right: 10px">
+    <div class="d-flex flex-row align-items-center mb-1">
+        <span style="font-size: 20px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-wallet"></i>
         </span>
-        <label for="monthlyPayInRange">Monthly Pay In</label>
+        <label for="monthlyPayInRange">Monthly Pay In: <span style="color: #ff2968">{monthlyPayIn.toFixed(1)}</span> DAI</label>
     </div>
 
     <input bind:value={monthlyPayIn} type="range" class="custom-range" id="monthlyPayInRange" 
-        min="0" max="1000">
+        min="1" max="10000">
 
-    <h2 class="py-4 "><em> ----- After {yearsTillRetire} years ----- </em></h2>
+    <h2 class="py-4 my-1"><em> {yearsTillRetire} </em></h2>
 
-    <div class="d-flex flex-row justify-content-start align-items-center my-2">
-        <span style="font-size: 27px; color: #ff2968; padding-right: 10px">
+    <div class="d-flex flex-row justify-content-start align-items-center mb-1">
+        <span style="font-size: 20px; color: #00e8d5; padding-right: 10px">
         <i class="fa fa-money-bill-alt"></i>
         </span>
-        <label for="monthlyPayInRange">Monthly Pay Out</label>
+        <label for="monthlyPayInRange">Monthly Pay Out: <span style="color: #ff2968">{monthlyPayOut.toFixed(1)}</span> DAI</label>
     </div>
 
     <input bind:value={monthlyPayOut} type="range" class="custom-range" id="monthlyPayInRange" 
-        min="0" max="100000">
+        min="1" max="100000">
 
 </section>
 
+<footer class="fixed-bottom text-center mb-5">
+    <button on:click="{() => eth.joinDAO()}">Create Your Plan</button>
+</footer>
 
-<button on:click="{() => eth.joinDAO()}">Create Your Plan</button>

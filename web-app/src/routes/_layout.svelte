@@ -6,7 +6,7 @@
     export let segment;
 </script>
 
-<Nav {segment} />
+<!-- <Nav {segment} /> -->
 
 <main>
     <slot></slot>

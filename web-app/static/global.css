@@ -34,7 +34,7 @@ h2 {
 
 h3 {
 	color: #ededed;
-	font-size: 18px;
+	font-size: 25px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -43,7 +43,8 @@ h4 {
 	color: #ff2968;
 	font-size: 13px;
     overflow: hidden;
-    text-overflow: ellipsis;
+	text-overflow: ellipsis;
+	margin:0;
 }
 
 a {
@@ -60,7 +61,7 @@ label {
 	color: #f2f2fa;
 }	
 
-input, button, select, textarea {
+input, select, textarea {
 	font-family: inherit;
 	font-size: inherit;
 	padding: 0.4em;
@@ -91,7 +92,17 @@ input:focus {
 	box-shadow: none;
 	outline: none;
 	background-color: transparent;
-	border-bottom: 1px solid #0056b3;
-	color:#0056b3;
+	border-bottom: 1px solid #00e8d5;
+	color:#00e8d5;
 	box-shadow: none;
+}
+
+button {
+	background-color: #ff2968;
+    width: 200px;
+    height: 28px;
+    padding: 0;
+    border-radius: 10px;
+    border: none;
+    color: white;
 }
