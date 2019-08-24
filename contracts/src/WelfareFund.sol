@@ -26,9 +26,11 @@ contract WelfareFund is Annuity {
     constructor(
         uint256[] memory lifeTable,
         uint256[] memory interestBasedTable,
-        EligibilityOracle eligibilityOracle
+        EligibilityOracle eligibilityOracle,
+        DeathOracle deathOracle
     ) public Annuity(lifeTable, interestBasedTable) {
         _eligibilityOracle = eligibilityOracle;
+        _deathOracle = deathOracle;
     }
 
     bool _init;
@@ -41,7 +43,7 @@ contract WelfareFund is Annuity {
     function join(uint16 joiningAge, uint16 retirementAge, uint128 monthlyPayIn) external payable {
         require(joiningAge > 0, "need to have lived at least one year");
         require(_persons[msg.sender].joiningAge == 0, "cannot register twice");
-        uint256 monthlyPayOut = payOutPerMonth(retirementAge, joiningAge, monthlyPayIn);
+        uint256 monthlyPayOut = payOutPerMonth(joiningAge, retirementAge, monthlyPayIn);
         uint16 numYears = retirementAge - joiningAge;
         _persons[msg.sender].joiningAge = joiningAge;
         _persons[msg.sender].payOutPerSecond = uint120(monthlyPayOut * NUM_SECONDS_IN_A_MONTH);
@@ -80,12 +82,11 @@ contract WelfareFund is Annuity {
         uint256 retirementTime = _persons[msg.sender].retirementTime;
         require(block.timestamp > retirementTime, "not retired yet");
 
-        uint128 payInPerSecond = _persons[msg.sender].payInPerSecond;
-        uint256 startTime = _persons[msg.sender].startTime;
         uint256 currentContribution = _persons[msg.sender].contribution;
         require(currentContribution >= (retirementTime - startTime) * payInPerSecond, "did not pay all");
 
         uint256 joiningAge = _persons[msg.sender].joiningAge;
+        uint256 startTime = _persons[msg.sender].startTime;
         uint16 currentAge = uint16(joiningAge + (block.timestamp - startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
         require(!_eligibilityOracle.isEligible(msg.sender, currentAge), "not eligible");
         uint256 totalPaidOut = _persons[msg.sender].totalPaidOut;
@@ -94,5 +95,36 @@ contract WelfareFund is Annuity {
         uint120 diff = uint120(toPay - totalPaidOut);
         msg.sender.transfer(diff);
         _persons[msg.sender].totalPaidOut += diff;
+    }
+    
+    function getPayIn() view returns (
+        uint256 nextPaymentDueOn,
+        uint256 amountDue,
+        uint256 penaltyDue,
+        uint256 amountPaid,
+        uint256 timeRetire
+    ){
+            
+    }
+    
+    function claimPayOut() view returns (
+        uint256 payoutAmount
+    ){
+        //we dont do it?
+    }
+    
+    enum Status {retired, paying, dead}
+    function isJoined() view returns (
+        bool joined,
+        Status status
+    ){
+        bool isDead = _deathOracle.isDead(msg.sender);
+        if (isDead) status = Status.dead;
+        else {
+            bool isRetired = block.timestamp - retirementTime > 0;
+            if (isRetired) status = Status.retired;
+            else status = Status.paying;
+        }
+        joined = _persons[msg.sender].joiningAge > 0;
     }
 }
