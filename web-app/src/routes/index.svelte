@@ -2,6 +2,7 @@
     import wallet from '../stores/wallet';
     import eth from '../eth';
     import annuity from '../math/annuity';
+    import Modal from '../components/Modal.svelte';
     import { beforeUpdate, afterUpdate } from 'svelte';
 
     let monthlyPayIn = 0;
@@ -10,6 +11,7 @@
     let inputRetirementAge = 60;
     let last_monthlyPayIn = 0;
     let last_monthlyPayOut = 0;
+    let loadingTransaction = false;
 
     $:isValidRetirementAge = inputRetirementAge > inputJoiningAge ? 
     '' : 'border: 1px solid  #ff2968; color: #ff2968;' 
@@ -115,7 +117,21 @@ input[type="range"]::-webkit-slider-thumb {
 
 </section>
 
-<footer class="fixed-bottom text-center mb-5">
-    <button on:click="{() => eth.joinDAO()}">Create Your Plan</button>
+<footer class="text-center mt-5">
+    <button on:click="{() => loadingTransaction = true }" >Create Your Plan</button>
 </footer>
+
+{#if loadingTransaction}
+	<Modal on:close="{() => loadingTransaction = false}">
+		<h4 slot="header"> Pending Transation</h4>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                role="progressbar" 
+                aria-valuenow="100" 
+                aria-valuemin="0" 
+                aria-valuemax="100" 
+                style="width: 100%; background-color:  #ff2968"></div>
+        </div>
+	</Modal>
+{/if}
 
