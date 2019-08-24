@@ -30,19 +30,6 @@ function payInPerMonth(_retirementAge, _currentAge, _payOutPerMonth, lifeTable){
   return result;
 }
 
-function sexToBool(_sex){
-  var sex = _sex.trim()
-  if (0 == "Boy".localeCompare(sex, undefined, { sensitivity: 'base' }))
-  {
-    return true;
-  }
-  else if ( 0 == "Girl".localeCompare(sex, undefined, { sensitivity: 'base' }))
-  {
-    return false;
-  }
-  else throw "unknown sex: '" + sex+"'";
-}
-
 function PresentValueImmediateAnnuity(x, i, n, lifeTable) {
   
   // JS is very ambiguos
