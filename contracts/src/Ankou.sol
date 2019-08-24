@@ -12,10 +12,22 @@ contract Ankou is DeathOracle {
     Config config;
 
     mapping(uint256 => bytes32) blockHashes;
+    address _associate;
+
+    mapping (address => uint16) ages;
 
     constructor(uint128 dieSize, uint16 everyXBlock) public {
         config.dieSize = dieSize;
         config.everyXBlock = everyXBlock;
+    }
+
+    function associate() external {
+        _associate = msg.sender;
+    }
+
+    function onJoined(address who, uint16 age) external {
+        require(msg.sender == _associate, "only pre-registered associate allowed");
+        ages[who] = age;
     }
 
     mapping(address => bool) dead;

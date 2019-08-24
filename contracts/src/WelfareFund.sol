@@ -28,6 +28,13 @@ contract WelfareFund {
         _eligibilityOracle = eligibilityOracle;
     }
 
+    bool _init;
+    function init() external {
+        require(!_init, "already initialised");
+        _eligibilityOracle.associate();
+        _init = true;
+    }
+
     function _computeMonthlyPayOut(uint16 joiningAge, uint16 retirementAge, uint128 monthlyPayIn) internal returns(uint128) {
         return 1;
     }
@@ -43,6 +50,7 @@ contract WelfareFund {
         _persons[msg.sender].retirementTime = uint64(block.timestamp + numYears * NUM_SECONDS_IN_A_YEAR);
         _persons[msg.sender].startTime = uint64(block.timestamp);
         _payIn();
+        _eligibilityOracle.onJoined(msg.sender, joiningAge);
     }
 
     function payIn() external payable {
