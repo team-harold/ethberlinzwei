@@ -1,0 +1,4 @@
+node_modules
+public/bundle.*
+__sapper__/
+_export/
