@@ -80,11 +80,12 @@ contract WelfareFund is Annuity {
         uint256 retirementTime = _persons[msg.sender].retirementTime;
         require(block.timestamp > retirementTime, "not retired yet");
 
+        uint128 payInPerSecond = _persons[msg.sender].payInPerSecond;
+        uint256 startTime = _persons[msg.sender].startTime;
         uint256 currentContribution = _persons[msg.sender].contribution;
         require(currentContribution >= (retirementTime - startTime) * payInPerSecond, "did not pay all");
 
         uint256 joiningAge = _persons[msg.sender].joiningAge;
-        uint256 startTime = _persons[msg.sender].startTime;
         uint16 currentAge = uint16(joiningAge + (block.timestamp - startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
         require(!_eligibilityOracle.isEligible(msg.sender, currentAge), "not eligible");
         uint256 totalPaidOut = _persons[msg.sender].totalPaidOut;
