@@ -136,13 +136,13 @@ contract WelfareFund is Annuity {
         bool joined,
         Status status
     ){
-        bool isDead = _deathOracle.isDead(msg.sender);
+        bool isDead = _deathOracle.isDead(who);
         if (isDead) status = Status.dead;
         else {
             bool isRetired = block.timestamp > _persons[who].retirementTime;
             if (isRetired) status = Status.retired;
             else status = Status.paying;
         }
-        joined = _persons[msg.sender].joiningAge > 0;
+        joined = _persons[who].joiningAge > 0;
     }
 }
