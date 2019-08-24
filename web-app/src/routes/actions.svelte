@@ -8,41 +8,58 @@
     import Pending from '../components/pending.svelte';
     import { onMount, beforeUpdate, afterUpdate } from 'svelte';
 
-    let userStatus = ''
+    let userStatus = {joined : null, status: null}
 
     $: if($wallet.address) {
-        fetchPendingTransactions()
+        checkStatus()
     }
 
-    async function fetchPendingTransactions() {
-        console.log("getting userStatus: ", $wallet.address)
-        userStatus = await eth.isJoined($wallet.address)
-        console.log("userStatus: ", userStatus)
+    async function checkStatus() { //
+        let l = await checkLocalStorage()
+        if (!l) {
+            checkUserContractStatus()
+        }
     }
 
+    async function checkLocalStorage () {
+        console.log("getting localstorages: ", $wallet.address)
+        let pendingTxString =  localStorage.getItem($wallet.address)
+        console.log("pendingTxString: ", pendingTxString)
+        if (pendingTxString) {
+            let r = await eth.getTransactionReceipt(pendingTxString);
+            if (r.status == 1){
+                localStorage.removeItem($wallet.address)
+                return false
+            }
+        }
+        return false
+    }
 
-    // onMount( async() => {
-    //     setInterval(async () => {
-    //         try {
-    //             await fetchPendingTransactions()
-    //         } catch (e) {
-    //             console.log(e)
-    //         }
-    //     }, 1000);
-    // })
+    async function checkUserContractStatus () {
+        console.log("getting userStatus from contract: ", $wallet.address)
+        let status = await eth.isJoined($wallet.address)
+        console.log('status: ', status)
+        userStatus = {
+            joined: status.joined,
+            status: status.status == 0 ? 'retired' : status.status == 1 ? 'paying' : 'dead'
+        }
+        console.log('userStatus: ', userStatus)
+    }
 
 </script>
 
 
-{#if userStatus == 'new'}
-	<Create/>
-{:else if userStatus == "pending"}
-	<Pending message={"mined transaction..."}/>
-{:else if userStatus == "paying"}
+{#if !userStatus.joined && userStatus.status == 'retired'}
+	<Create /> // on:txEvent = "init()"
+{:else if !userStatus}
+	<Pending message={"Loading accounts"}/>
+{:else if userStatus.joined && userStatus.status == "paying"}
 	<Pay status={"paying"}/>
-{:else if userStatus == "retired"}
+{:else if userStatus.joined && userStatus.status == "retired"}
 	<Pay status={"retired"}/>
-{:else}
+{:else if userStatus.joined && userStatus.status == "dead"}
 	<Dead/>
 {/if}
 
+<!-- BELSY TODO -->
+<!-- emit event from create and pay in / out -->

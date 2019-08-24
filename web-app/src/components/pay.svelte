@@ -3,12 +3,20 @@
     import eth from '../eth';
     import annuity from '../math/annuity';
     import Modal from './Modal.svelte';
-    import { beforeUpdate, afterUpdate } from 'svelte';
+    import {onMount, beforeUpdate, afterUpdate } from 'svelte';
     export let status;
-    let paymentDue = 999
-    let amountPaid = 999
-    let timeRetire = 999
-    let timeDue = 999
+
+    let payInData = []
+    onMount( async() => {
+        payInData = await eth.getPayIn($wallet.address)
+        console.log("pay in data: ", payInData)
+
+    })
+    $:paymentDue = payInData.amountDue ? payInData.amountDue.toString(10) : ''
+    $:amountPaid = payInData.amountPaid ? payInData.amountPaid.toString(10) : ''
+    $:timeRetire = payInData.timeRetire ? payInData.timeRetire.toString(10) : ''
+    $:timeDue = payInData.nextPaymentDueOn ? payInData.nextPaymentDueOn.toString() : ''
+    
 </script>
 
 <style>

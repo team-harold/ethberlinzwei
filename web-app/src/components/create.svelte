@@ -36,6 +36,13 @@
         last_monthlyPayOut = monthlyPayOut;
     });
 
+    async function join() {
+        let txObj = await eth.join(inputJoiningAge, inputRetirementAge, monthlyPayIn)
+        console.log("txObj: ", txObj)
+        console.log("txHash: ", txObj.hash)
+        localStorage.setItem($wallet.address, txObj.hash)
+    }
+
 </script>
 
 <style>
@@ -122,7 +129,8 @@ input[type="range"]::-webkit-slider-thumb {
 </section>
 
 <footer class="text-center mt-5">
-    <button on:click="{() => loadingTransaction = true }" >Create Your Plan</button>
+<!-- join: async (joiningAge, retirementAge, monthlyPayIn) -->
+    <button on:click="{() => join() }" >Create Your Plan</button>
 </footer>
 
 {#if loadingTransaction}

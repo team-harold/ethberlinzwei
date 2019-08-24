@@ -25,21 +25,19 @@ export default {
             contracts[key] = new ethers.Contract(info.address, info.contractInfo.abi, signer || provider);
         }
     },
-
-    join: async (joiningAge, retirementAge, monthlyPayIn) => {
+    getTransactionReceipt: async (txHash) => {
+        let p = await provider.getTransactionReceipt(txHash);
+        return p;
+    },
+    join: (joiningAge, retirementAge, monthlyPayIn) => {
         if (contracts.WelfareFund) {
-            await contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000, gasPrice: 1 });
+            return contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000, gasPrice: 1 });
         } else {
             throw ('no contract WelfareFund setup');
         }
     },
-
-    payIn: () => {return { 
-        nexyPaymentDueOn: new Date().toDateString(),
-        amountDue: 500,
-        penaltyDue: 5,
-        amountPaid: 1500,
-        timeRetire: new Data().toDateSting()};
+    getPayIn: async (addr) => {
+        return contracts.WelfareFund.functions.getPayIn(addr);
     },
     claimPayOut: () => {return {payoutAmount: 740};
     },          
