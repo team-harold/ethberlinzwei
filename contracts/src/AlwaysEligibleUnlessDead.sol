@@ -24,7 +24,7 @@ contract AlwaysEligibleUnlessDead is EligibilityOracle {
         _deathOracle.onJoined(who, age);
     }
 
-    function isEligible(address who, uint16 currentAge) external returns (bool) {
+    function isEligible(address who, uint16 currentAge) external view returns (bool) {
         return members[who] && !_deathOracle.isDead(who);
     }
 }

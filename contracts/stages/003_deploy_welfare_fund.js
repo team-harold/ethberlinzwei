@@ -8,11 +8,12 @@ module.exports = async ({ chainId, accounts, initialRun, namedAccounts, register
     const contractName = 'WelfareFund';
 
     const eligibilityOracle = getDeployedContract('AlwaysEligibleUnlessDead');
+    const deathOracle = getDeployedContract('Ankou');
     const deployResult = await deploy(
         contractName,
         { from: deployer, gas },
         contractName,
-        lifeTable, interestRate5PCnominators, eligibilityOracle.address,
+        lifeTable, interestRate5PCnominators, eligibilityOracle.address, deathOracle.address
     );
 
     if (initialRun) {

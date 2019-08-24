@@ -1,6 +1,7 @@
 pragma solidity 0.5.11;
 
 import "./Interfaces/EligibilityOracle.sol";
+import "./Interfaces/DeathOracle.sol";
 import "./Annuity.sol";
 
 contract WelfareFund is Annuity {
@@ -22,6 +23,7 @@ contract WelfareFund is Annuity {
 
     mapping(address => Person) _persons;
     EligibilityOracle _eligibilityOracle;
+    DeathOracle _deathOracle;
 
     constructor(
         uint256[] memory lifeTable,
@@ -43,7 +45,7 @@ contract WelfareFund is Annuity {
     function join(uint16 joiningAge, uint16 retirementAge, uint128 monthlyPayIn) external payable {
         require(joiningAge > 0, "need to have lived at least one year");
         require(_persons[msg.sender].joiningAge == 0, "cannot register twice");
-        uint256 monthlyPayOut = payOutPerMonth(joiningAge, retirementAge, monthlyPayIn);
+        uint256 monthlyPayOut = payOutPerMonth(retirementAge, joiningAge, monthlyPayIn);
         uint16 numYears = retirementAge - joiningAge;
         _persons[msg.sender].joiningAge = joiningAge;
         _persons[msg.sender].payOutPerSecond = uint120(monthlyPayOut * NUM_SECONDS_IN_A_MONTH);
@@ -82,11 +84,12 @@ contract WelfareFund is Annuity {
         uint256 retirementTime = _persons[msg.sender].retirementTime;
         require(block.timestamp > retirementTime, "not retired yet");
 
+        uint256 startTime = _persons[msg.sender].startTime;
         uint256 currentContribution = _persons[msg.sender].contribution;
-        require(currentContribution >= (retirementTime - startTime) * payInPerSecond, "did not pay all");
+        require(currentContribution >= (retirementTime - startTime) * _persons[msg.sender].payInPerSecond, "did not pay all");
 
         uint256 joiningAge = _persons[msg.sender].joiningAge;
-        uint256 startTime = _persons[msg.sender].startTime;
+        
         uint16 currentAge = uint16(joiningAge + (block.timestamp - startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
         require(!_eligibilityOracle.isEligible(msg.sender, currentAge), "not eligible");
         uint256 totalPaidOut = _persons[msg.sender].totalPaidOut;
@@ -96,32 +99,47 @@ contract WelfareFund is Annuity {
         msg.sender.transfer(diff);
         _persons[msg.sender].totalPaidOut += diff;
     }
-    
-    function getPayIn() view returns (
+
+    function timeWhenPenalty(address who) external view returns(uint256) {
+        uint256 startTime = _persons[who].startTime;
+        if(startTime == 0) {
+            return 0;
+        }
+        return startTime + (_persons[who].contribution / _persons[who].payInPerSecond) + NUM_SECONDS_BEFORE_PENALTY;
+    }
+
+    function getPayIn(address who) external view returns (
+        bool joined,
         uint256 nextPaymentDueOn,
         uint256 amountDue,
-        uint256 penaltyDue,
         uint256 amountPaid,
         uint256 timeRetire
     ){
-            
+        uint256 startTime = _persons[who].startTime;
+        joined = startTime != 0;
+        nextPaymentDueOn = startTime + (_persons[who].contribution / _persons[who].payInPerSecond) + NUM_SECONDS_BEFORE_PENALTY;
+        amountDue = _persons[who].payOutPerSecond * NUM_SECONDS_IN_A_MONTH;
+        amountPaid = _persons[who].contribution;
+        timeRetire = _persons[who].retirementTime;
     }
-    
-    function claimPayOut() view returns (
-        uint256 payoutAmount
-    ){
-        //we dont do it?
+
+    function getPayOutPerSecond(address who) external view returns(uint256){
+        return _persons[who].payOutPerSecond;
     }
-    
+
+    function getPayInPerSecond(address who) external view returns(uint256){
+        return _persons[who].payInPerSecond;
+    }
+
     enum Status {retired, paying, dead}
-    function isJoined() view returns (
+    function isJoined(address who) external view returns (
         bool joined,
         Status status
     ){
         bool isDead = _deathOracle.isDead(msg.sender);
         if (isDead) status = Status.dead;
         else {
-            bool isRetired = block.timestamp - retirementTime > 0;
+            bool isRetired = block.timestamp > _persons[who].retirementTime;
             if (isRetired) status = Status.retired;
             else status = Status.paying;
         }
