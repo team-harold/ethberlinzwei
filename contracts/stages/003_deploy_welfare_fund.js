@@ -1,4 +1,6 @@
 const { deploy, getDeployedContract, tx } = require('rocketh-ethers')(require('rocketh'), require('ethers'));
+const interestRate5PCnominators = require('../../web-app/src/math/interestRate5PCnominators');
+const lifeTable = require('../../web-app/src/math/germanLifeTable1994');
 
 module.exports = async ({ chainId, accounts, initialRun, namedAccounts, registerDeployment }) => {
     const deployer = accounts[0];
@@ -10,7 +12,7 @@ module.exports = async ({ chainId, accounts, initialRun, namedAccounts, register
         contractName,
         { from: deployer, gas },
         contractName,
-        [], eligibilityOracle.address, // TODO mortability table
+        lifeTable, interestRate5PCnominators, eligibilityOracle.address,
     );
 
     if (initialRun) {

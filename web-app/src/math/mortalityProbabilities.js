@@ -1,6 +1,6 @@
 // qxFemale
-export default [
-    0.000059,
+module.exports = [
+    0.000059, //1
     0.000059,
     0.000059,
     0.000059,

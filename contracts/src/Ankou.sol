@@ -48,11 +48,11 @@ contract Ankou is DeathOracle {
         uint16 joiningAge = _persons[who].joiningAge;
         require(joiningAge != 0, "not registered");
 
-        uint16 age = joiningAge + uint16((block.timestamp - _persons[who].startTime) / NUM_SECONDS_IN_A_YEAR);
+        uint16 ageIndex = joiningAge + uint16((block.timestamp - _persons[who].startTime) / NUM_SECONDS_IN_A_YEAR) -1;
         
         bool isDead = true;
-        if(age < _probabilities.length) {
-            uint32 proba = _probabilities[age];
+        if(ageIndex < _probabilities.length) {
+            uint32 proba = _probabilities[ageIndex];
 
             bytes32 blockHash;
             if(blockNumber < block.number - 255) {

@@ -14,17 +14,17 @@ contract Annuity {
  
     uint256 constant public PRECISION = 10^18;
     
-    uint256[] lifeTable;
-    uint256[] pvCompoundInterestNominators;
+    uint256[] _lifeTable;
+    uint256[] _interestBasedTable;
      
-    constructor (uint256[] memory _lifeTable, uint256[] memory _presentValueCompoundInterestNominators) public{
-        lifeTable = _lifeTable;
-        pvCompoundInterestNominators = _presentValueCompoundInterestNominators;
+    constructor (uint256[] memory lifeTable, uint256[] memory presentValueCompoundInterestNominators) public{
+        _lifeTable = lifeTable;
+        _interestBasedTable = presentValueCompoundInterestNominators;
     }
     
     function payOutPerMonth(uint256 _retirementAge, uint256 _currentAge, uint256 _payInPerMonth) public view returns (uint256 result){
       
-      uint256 EVP_Out_x = calcPresentValueImmediateAnnuity(_retirementAge, lifeTable.length);// div Precision
+      uint256 EVP_Out_x = calcPresentValueImmediateAnnuity(_retirementAge, _lifeTable.length);// div Precision
       uint256 EVP_Out = getPresentVNominator(_retirementAge - _currentAge) * EVP_Out_x; // div Precision
       uint256 EVP_In = calcPresentValueImmediateAnnuity(_currentAge, _retirementAge); // div PRECISION
       result = _payInPerMonth *  EVP_In / (EVP_Out * PRECISION); // 2 Precision divs are canceled out and 1 remains
@@ -37,13 +37,13 @@ contract Annuity {
       
         // why x-1 is not clear, but it fits the R package lifecontingencies
         // aggregating everything to not store in uint and hence save precision.
-        ax = ax + (vt*lifeTable[x-1+t]/(lifeTable[x-1]));
+        ax = ax + (vt*_lifeTable[x-1+t]/(_lifeTable[x-1]));
       }
     }
     
     /// Present value of a single payment in n years
     function  getPresentVNominator(uint256 n) public view returns (uint256 result){
-      result = pvCompoundInterestNominators[n];
+      result = _interestBasedTable[n];
     }
 
     

@@ -38,4 +38,4 @@
 <label>monthlyPayIn</label><input type=range bind:value={monthlyPayIn} min=1 max=1000 /><br />
 <label>monthlyPayOut</label><input type=range bind:value={monthlyPayOut} min=1 max=1000 /><br />
 
-<button on:click="{() => eth.joinDAO()}">Join DAO</button>
+<button on:click="{() => eth.join()}">Join DAO</button>

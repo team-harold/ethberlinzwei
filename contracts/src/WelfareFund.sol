@@ -1,8 +1,9 @@
 pragma solidity 0.5.11;
 
 import "./Interfaces/EligibilityOracle.sol";
+import "./Annuity.sol";
 
-contract WelfareFund {
+contract WelfareFund is Annuity {
 
     uint256 constant NUM_SECONDS_IN_A_YEAR = 31556952;
     uint256 constant NUM_SECONDS_IN_A_MONTH = NUM_SECONDS_IN_A_YEAR / 12; // 2629746;
@@ -20,11 +21,13 @@ contract WelfareFund {
     }
 
     mapping(address => Person) _persons;
-    uint64[] _mortalityTable;
     EligibilityOracle _eligibilityOracle;
 
-    constructor(uint64[] memory mortalityTable, EligibilityOracle eligibilityOracle) public {
-        _mortalityTable = mortalityTable;
+    constructor(
+        uint256[] memory lifeTable,
+        uint256[] memory interestBasedTable,
+        EligibilityOracle eligibilityOracle
+    ) public Annuity(lifeTable, interestBasedTable) {
         _eligibilityOracle = eligibilityOracle;
     }
 
@@ -35,14 +38,10 @@ contract WelfareFund {
         _init = true;
     }
 
-    function _computeMonthlyPayOut(uint16 joiningAge, uint16 retirementAge, uint128 monthlyPayIn) internal returns(uint128) {
-        return 1;
-    }
-
     function join(uint16 joiningAge, uint16 retirementAge, uint128 monthlyPayIn) external payable {
         require(joiningAge > 0, "need to have lived at least one year");
         require(_persons[msg.sender].joiningAge == 0, "cannot register twice");
-        uint256 monthlyPayOut = _computeMonthlyPayOut(joiningAge, retirementAge, monthlyPayIn);
+        uint256 monthlyPayOut = payOutPerMonth(joiningAge, retirementAge, monthlyPayIn);
         uint16 numYears = retirementAge - joiningAge;
         _persons[msg.sender].joiningAge = joiningAge;
         _persons[msg.sender].payOutPerSecond = uint120(monthlyPayOut * NUM_SECONDS_IN_A_MONTH);
@@ -80,6 +79,10 @@ contract WelfareFund {
     function claimPayOut() external {
         uint256 retirementTime = _persons[msg.sender].retirementTime;
         require(block.timestamp > retirementTime, "not retired yet");
+
+        uint256 currentContribution = _persons[msg.sender].contribution;
+        require(currentContribution >= (retirementTime - startTime) * payInPerSecond, "did not pay all");
+
         uint256 joiningAge = _persons[msg.sender].joiningAge;
         uint256 startTime = _persons[msg.sender].startTime;
         uint16 currentAge = uint16(joiningAge + (block.timestamp - startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
