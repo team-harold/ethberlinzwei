@@ -4,21 +4,24 @@ import "./Interfaces/DeathOracle.sol";
 
 contract Ankou is DeathOracle {
 
-    struct Config {
-        uint128 dieSize;
-        uint16 everyXBlock;
-    }
-
-    Config config;
+    uint256 constant NUM_SECONDS_IN_A_YEAR = 31556952;
+    uint256 constant NUM_SECONDS_IN_A_MONTH = NUM_SECONDS_IN_A_YEAR / 12; // 2629746;
 
     mapping(uint256 => bytes32) blockHashes;
     address _associate;
+    uint32[] _probabilities;
+    uint32 _everyXBlock;
 
-    mapping (address => uint16) ages;
+    struct Person {
+        uint16 joiningAge;
+        uint64 startTime;
+        bool dead;
+    }
+    mapping (address => Person) _persons;
 
-    constructor(uint128 dieSize, uint16 everyXBlock) public {
-        config.dieSize = dieSize;
-        config.everyXBlock = everyXBlock;
+    constructor(uint32[] memory probabilities, uint32 everyXBlock) public {
+        _everyXBlock = everyXBlock;
+        _probabilities = probabilities;
     }
 
     function associate() external {
@@ -27,27 +30,42 @@ contract Ankou is DeathOracle {
 
     function onJoined(address who, uint16 age) external {
         require(msg.sender == _associate, "only pre-registered associate allowed");
-        ages[who] = age;
+        _persons[who].joiningAge = age;
+        _persons[who].startTime = uint64(block.timestamp);
     }
 
-    mapping(address => bool) dead;
+    
     function isDead(address who) external returns (bool) {
-        return dead[who];
+        require(_persons[who].joiningAge != 0, "not registered");
+        return _persons[who].dead;
     }
 
     function registerDeath(address who, uint256 blockNumber) external {
-        require(blockNumber % config.everyXBlock == 0, "not a valid block number");
-        bytes32 blockHash;
-        if(blockNumber < block.number - 255) {
-            blockHash = blockHashes[blockNumber];
-        } else {
-            blockHash = blockhash(blockNumber);
-            blockHashes[blockNumber] = blockHash; // save for others
-        }
-        require(uint256(blockHash) != 0, "can't get blockhash");
+        require(!_persons[who].dead, "already dead");
+        
+        require(blockNumber % _everyXBlock == 0, "not a valid block number");
 
-        bool isDead = (uint256(keccak256(abi.encodePacked(blockHash, who))) % config.dieSize) == 0;
+        uint16 joiningAge = _persons[who].joiningAge;
+        require(joiningAge != 0, "not registered");
+
+        uint16 age = joiningAge + uint16((block.timestamp - _persons[who].startTime) / NUM_SECONDS_IN_A_YEAR);
+        
+        bool isDead = true;
+        if(age < _probabilities.length) {
+            uint32 proba = _probabilities[age];
+
+            bytes32 blockHash;
+            if(blockNumber < block.number - 255) {
+                blockHash = blockHashes[blockNumber];
+            } else {
+                blockHash = blockhash(blockNumber);
+                blockHashes[blockNumber] = blockHash; // save for others
+            }
+            require(uint256(blockHash) != 0, "can't get blockhash");
+
+            isDead = (uint256(keccak256(abi.encodePacked(blockHash, who))) % 1000000) < proba;
+        }
         require(isDead, "that person is not dead");
-        dead[who] = isDead;
+        _persons[who].dead = isDead;
     }
 }

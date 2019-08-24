@@ -9,7 +9,7 @@ module.exports = async ({ chainId, accounts, initialRun, namedAccounts, register
         contractName,
         { from: deployer, gas },
         contractName,
-        100, 256 // TODO probability table
+        [], 256 // TODO probability table
     );
 
     if (initialRun) {
