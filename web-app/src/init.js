@@ -15,9 +15,16 @@ function findGetParameter(parameterName) {
 
 export default () => {
     let chainId = 4;
+
+    const supportedChainIds = Object.keys(contractsInfo);
+    if (supportedChainIds.length == 1) {
+        chainId = supportedChainIds[0];
+    }
+
     if (process.browser) {
         chainId = findGetParameter('chainId') || chainId;
     }
+
     wallet.load(chainId, async () => {
         const currentChainId = await eth.fetchChainId();
         if (chainId == currentChainId) {

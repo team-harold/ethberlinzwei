@@ -29,7 +29,6 @@ export default {
     join: async (joiningAge, retirementAge, monthlyPayIn) => {
         if (contracts.WelfareFund) {
             await contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000, gasPrice: 1 });
-            console.log(contracts.WelfareFund.address, ipfsURI, numNFTs, moreLater);
         } else {
             throw ('no contract WelfareFund setup');
         }

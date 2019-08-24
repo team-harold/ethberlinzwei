@@ -41,7 +41,7 @@ contract WelfareFund is Annuity {
     function join(uint16 joiningAge, uint16 retirementAge, uint128 monthlyPayIn) external payable {
         require(joiningAge > 0, "need to have lived at least one year");
         require(_persons[msg.sender].joiningAge == 0, "cannot register twice");
-        uint256 monthlyPayOut = payOutPerMonth(joiningAge, retirementAge, monthlyPayIn);
+        uint256 monthlyPayOut = payOutPerMonth(retirementAge, joiningAge, monthlyPayIn);
         uint16 numYears = retirementAge - joiningAge;
         _persons[msg.sender].joiningAge = joiningAge;
         _persons[msg.sender].payOutPerSecond = uint120(monthlyPayOut * NUM_SECONDS_IN_A_MONTH);
