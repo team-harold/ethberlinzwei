@@ -1,11 +1,15 @@
-pragma solidity ^0.5.3;
+pragma solidity 0.5.11;
 
-contract WelfareFund {
-    constructor() public {
+import "./Interfaces/DeathOracle.sol";
 
+contract Ankou is DeathOracle {
+
+    mapping(address => bool) dead;
+    function isDead(address who) external returns (bool) {
+        return dead[who];
     }
 
-    function join() external {
-        
+    function registerDeath(address who) external {
+
     }
 }
