@@ -8,7 +8,7 @@ body{
 	background-color: #2E2F2F;
 	color: #333;
 	margin: 0;
-	padding: 8px;
+	padding: 0;
 	box-sizing: border-box;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
@@ -17,9 +17,13 @@ main {
 	background-color: #2E2F2F;
 	position: relative;
 	width: 100%;
-	padding: 1em;
+	padding: 1em 0 1em 0;
 	margin: 0 auto;
 	box-sizing: border-box;
+}
+
+header {
+	text-align: center;
 }
 
 h1 {
@@ -48,11 +52,12 @@ h4 {
 }
 
 a {
-	color: rgb(0,100,200);
+	color:  #ff2968;
 	text-decoration: none;
 }
 
 a:hover {
+	color:  #ff2968;
 	text-decoration: underline;
 }
 
@@ -98,7 +103,7 @@ input:focus {
 }
 
 button {
-	background-color: #ff2968;
+	background-color: #0075db;
     width: 200px;
     height: 28px;
     padding: 0;
@@ -106,3 +111,10 @@ button {
     border: none;
     color: white;
 }
+
+.logo-img {
+	width: calc(100vw - 5em);
+	padding-bottom: 4rem;
+	max-width: 320px;
+}
+
