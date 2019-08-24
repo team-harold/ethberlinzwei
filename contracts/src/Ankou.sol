@@ -36,7 +36,7 @@ contract Ankou is DeathOracle {
 
     
     function isDead(address who) external view returns (bool) {
-        require(_persons[who].joiningAge != 0, "not registered");
+        // require(_persons[who].joiningAge != 0, "not registered");
         return _persons[who].dead;
     }
 
