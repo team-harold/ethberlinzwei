@@ -8,17 +8,29 @@
     import Pending from '../components/pending.svelte';
     import { onMount, beforeUpdate, afterUpdate } from 'svelte';
 
-    async function fetchPendingTransactions() {
-        let s = await eth.isJoined()
-        return s.status
-    }
     let userStatus = ''
 
-    onMount( async() => {
-        userStatus = await fetchPendingTransactions()
-    })
+    $: if($wallet.address) {
+        fetchPendingTransactions()
+    }
 
-    let x = 1
+    async function fetchPendingTransactions() {
+        console.log("getting userStatus: ", $wallet.address)
+        userStatus = await eth.isJoined($wallet.address)
+        console.log("userStatus: ", userStatus)
+    }
+
+
+    // onMount( async() => {
+    //     setInterval(async () => {
+    //         try {
+    //             await fetchPendingTransactions()
+    //         } catch (e) {
+    //             console.log(e)
+    //         }
+    //     }, 1000);
+    // })
+
 </script>
 
 

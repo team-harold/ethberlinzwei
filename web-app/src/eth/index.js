@@ -41,11 +41,10 @@ export default {
         amountPaid: 1500,
         timeRetire: new Data().toDateSting()};
     },
-    claimPayOut: () => {return {
-        payoutAmount: 740};
-    },
-    isJoined: () => {return {
-        status: 'dead' //paying, dead, null
-    };
+    claimPayOut: () => {return {payoutAmount: 740};
+    },          
+    isJoined: async (addr) => {
+        return contracts.WelfareFund.functions.isJoined(addr);
+        // status: 'dead' //paying, dead, null
     },
 };
