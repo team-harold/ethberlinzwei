@@ -8,6 +8,8 @@
 /// (3) payInYearly = payOutYearly * PVout/ PVin
 /// (5) payInMonthly = payOutYearly/12 = payOutYearly * PVout / (12 * PVin) = payOutMonthly * PVout/PVin
 
+import table from './germanLifeTable1994.js';
+
 var i = 0.05
 
 function payOutPerMonth(_retirementAge, _currentAge, _payInPerMonth, lifeTable) {
@@ -39,30 +41,30 @@ function PresentValueImmediateAnnuity(x, i, n, lifeTable) {
 
   for (var t = 1; x + t < n; t++) {
     // JS can't handle x^y correctly!
-    vt = Math.pow((1 / (1 + i)), t)
+    var vt = Math.pow((1 / (1 + i)), t)
 
     // why x-1 is not clear, but it fits the R package lifecontingencies
-    _tpx = tpx(x - 1, t, lifeTable)
+    var _tpx = tpx(x - 1, t, lifeTable)
 
     ax = ax + (vt * _tpx)
 
-    Logger.log(t + ": age " + (x + t) + ": " +
-      " + vt " + vt +
-      " * tpx " + _tpx +
-      " = PV " + ax);
+    // Logger.log(t + ": age " + (x + t) + ": " +
+    //   " + vt " + vt +
+    //   " * tpx " + _tpx +
+    //   " = PV " + ax);
   }
   return ax
 }
 
 function tpx(x, t, lifeTable) {
-  result = lifeTable[x + t] / lifeTable[x]
+  var result = lifeTable[x + t] / lifeTable[x]
   return result
 }
 
 
 /// Present value of a single payment in n years
 function PresentV(n, i) {
-  result = Math.pow((1 / (1 + i)), n) // JS can't handle x^y correctly!
+  var result = Math.pow((1 / (1 + i)), n) // JS can't handle x^y correctly!
   return result;
 }
 
@@ -72,22 +74,18 @@ function PresentVSummOfPayments(n, i) {
 
   var result = 0;
   for (var t = 0; t < n; t++) {
-    vt = Math.pow((1 / (1 + i)), t + 1) // JS can't handle x^y correctly!
+    var vt = Math.pow((1 / (1 + i)), t + 1) // JS can't handle x^y correctly!
     result = result + vt
   }
   return result;
 }
 
-const table = [
-
-];
+export default {
+  payInPerMonth: (retirementAge, joiningAge, monthlyPayOut) => payInPerMonth(retirementAge, joiningAge, monthlyPayOut, table),
+  payOutPerMonth: (retirementAge, joiningAge, monthlyPayIn) => payOutPerMonth(retirementAge, joiningAge, monthlyPayIn, table),
+};
 
 // export default {
-//   payInPerMonth: (retirementAge, joiningAge, monthlyPayOut) => payInPerMonth(retirementAge, joiningAge, monthlyPayOut, lifeTable),
-//   payOutPerMonth: (retirementAge, joiningAge, monthlyPayIn) => payOutPerMonth(retirementAge, joiningAge, monthlyPayIn, lifeTable),
+//   payInPerMonth: (retirementAge, joiningAge, monthlyPayOut) => retirementAge + joiningAge + monthlyPayOut,
+//   payOutPerMonth: (retirementAge, joiningAge, monthlyPayIn) => retirementAge + joiningAge + monthlyPayIn,
 // };
-
-export default {
-  payInPerMonth: (retirementAge, joiningAge, monthlyPayOut) => retirementAge + joiningAge + monthlyPayOut,
-  payOutPerMonth: (retirementAge, joiningAge, monthlyPayIn) => retirementAge + joiningAge + monthlyPayIn,
-};

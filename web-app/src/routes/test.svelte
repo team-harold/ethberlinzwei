@@ -3,16 +3,15 @@
     import annuity from '../math/annuity';
     import { beforeUpdate, afterUpdate } from 'svelte';
 
-    let joiningAge = 0;
-    let retirementAge = 0;
+    let joiningAge = 1;
+    let retirementAge = 65;
+    let monthlyPayIn = 1;
+    let monthlyPayOut = 1;
 
-    let monthlyPayIn = 0;
-    let monthlyPayOut = 0;
     let last_monthlyPayIn = 0;
     let last_monthlyPayOut = 0;
 
     afterUpdate(() => {
-        console.log('afterUpdate');
         if (last_monthlyPayIn != monthlyPayIn) {
             monthlyPayOut = annuity.payOutPerMonth(retirementAge, joiningAge, monthlyPayIn);
         } else if (last_monthlyPayOut != last_monthlyPayOut) {
@@ -22,6 +21,8 @@
         }
         last_monthlyPayIn = monthlyPayIn;
         last_monthlyPayOut = monthlyPayOut;
+
+        console.log({ retirementAge, joiningAge, monthlyPayIn, monthlyPayOut });
     });
 
 </script>
@@ -32,9 +33,9 @@
     }
 </style>
 
-<input type=range bind:value={joiningAge} min=1 max=100 />
-<input type=range bind:value={retirementAge} min=30 max=100 />
-<input type=range bind:value={monthlyPayIn} min=1 max=1000 />
-<input type=range bind:value={monthlyPayOut} min=1 max=1000 />
+<label>joiningAge</label><input type=range bind:value={joiningAge} min=1 max=100 /><br />
+<label>retirementAge</label><input type=range bind:value={retirementAge} min=30 max=100 /><br />
+<label>monthlyPayIn</label><input type=range bind:value={monthlyPayIn} min=1 max=1000 /><br />
+<label>monthlyPayOut</label><input type=range bind:value={monthlyPayOut} min=1 max=1000 /><br />
 
 <button on:click="{() => eth.joinDAO()}">Join DAO</button>
