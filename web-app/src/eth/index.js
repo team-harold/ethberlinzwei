@@ -22,16 +22,34 @@ export default {
     setupContracts: (contractsInfo) => {
         for (let key of Object.keys(contractsInfo)) {
             const info = contractsInfo[key];
-            contracts[key] = new ethers.Contract(info.address, info.abi, signer || provider);
+            contracts[key] = new ethers.Contract(info.address, info.contractInfo.abi, signer || provider);
         }
     },
 
-    register: async (ipfsURI, numNFTs, moreLater) => {
+    join: async (joiningAge, retirementAge, monthlyPayIn) => {
         if (contracts.WelfareFund) {
+            await contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000, gasPrice: 1 });
             console.log(contracts.WelfareFund.address, ipfsURI, numNFTs, moreLater);
         } else {
             throw ('no contract WelfareFund setup');
         }
+    },
 
-    }
+    payIn: () => {return { 
+        nexyPaymentDueOn: new Date().toDateString(),
+        amountDue: 500,
+        penaltyDue: 5,
+        amountPaid: 1500,
+        timeRetire: new Data().toDateSting()};
+    },
+    claimPayOut: () => {return {
+        nextPayoutDueOn: new Date().toDateString,
+        payoutAmount: 740,
+        totalAmountPaid: 4000};
+    },
+    isJoined: () => {return {
+        joined: true,
+        status: 'retired' //paying, pending
+    };
+    },
 };

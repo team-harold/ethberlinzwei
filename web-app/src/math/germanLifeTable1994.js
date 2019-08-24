@@ -1,7 +1,7 @@
 /// starts with age 0: population is 100000000000
 /// ends with age 111: population is 0
 
-export default [
+module.exports = [
     100000000000,
     99994100000,
     99988200348,

@@ -31,7 +31,7 @@ function payInPerMonth(_retirementAge, _currentAge, _payOutPerMonth, lifeTable) 
   return result;
 }
 
-function PresentValueImmediateAnnuity(x, i, n, lifeTable) {
+function PresentValueImmediateAnnuity(x, i, n, lifeTable) { // x : when you retire // i :interest n : table
 
   // JS is very ambiguos
   x = Number(x);
@@ -40,13 +40,11 @@ function PresentValueImmediateAnnuity(x, i, n, lifeTable) {
   var ax = 0
 
   for (var t = 1; x + t < n; t++) {
-    // JS can't handle x^y correctly!
-    var vt = Math.pow((1 / (1 + i)), t)
 
     // why x-1 is not clear, but it fits the R package lifecontingencies
-    var _tpx = tpx(x - 1, t, lifeTable)
+    var _tpx = tpx(x - 1, t, lifeTable);
 
-    ax = ax + (vt * _tpx)
+    ax = ax + (_tpx / Math.pow((1 + i), t));
 
     // Logger.log(t + ": age " + (x + t) + ": " +
     //   " + vt " + vt +

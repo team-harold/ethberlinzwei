@@ -22,13 +22,11 @@
 
 
 <header class="d-flex flex-column align-items-center">
-    <img  class="logo-img" src="logo_invert.png">
-
-    <button >JOIN Transit</button>
-
+    <img  class="logo-img" alt="Transit" lass="logo-img" src="logo_invert.png">
+    <button on:click="{ () => {window.location.href="create"}}">JOIN Transit</button>
 </header>
 
-<section class="container-fluid index-section" style="background: #616161; text-align: center">
+<section class="container-fluid index-section" style="text-align: center">
 
     <h1>What is Transit?</h1>
     <div class="row">

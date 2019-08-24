@@ -69,9 +69,11 @@ input[type="range"]::-webkit-slider-thumb {
 }
     </style>
 
-<section class="create-section">
-    <img class="logo-img" src="logo_invert.png">
+<header>
+    <img alt="Transit" class="logo-img" src="logo_invert.png">
+</header>
 
+<section class="create-section">
     <h1> Your pension plan </h1>
 
     <div class="d-flex flex-row align-items-center mb-1">
