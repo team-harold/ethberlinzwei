@@ -9,10 +9,8 @@ import eth from '../eth';
 function reloadPage(reason, instant) {
     log.info((instant ? 'instant ' : '') + 'reloading page because ' + reason);
     if (instant) {
-        // setTimeout(() => window.location.reload(), 5000);
         window.location.reload();
     } else {
-        // setTimeout(() => window.location.reload(), 5000);
         setTimeout(() => window.location.reload(), 100);
     }
 }

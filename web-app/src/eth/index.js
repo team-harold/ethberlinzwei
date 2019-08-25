@@ -25,12 +25,34 @@ export default {
             contracts[key] = new ethers.Contract(info.address, info.contractInfo.abi, signer || provider);
         }
     },
-
-    join: async (joiningAge, retirementAge, monthlyPayIn) => {
+    getTransactionReceipt: async (txHash) => {
+        let p = await provider.getTransactionReceipt(txHash);
+        return p;
+    },
+    join: (joiningAge, retirementAge, monthlyPayIn) => {
+        console.log("joiningAge: ", joiningAge);
+        console.log("retirementAge: ", retirementAge);
+        console.log("monthlyPayIn: ", monthlyPayIn)
         if (contracts.WelfareFund) {
-            await contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000, gasPrice: 1 });
+            return contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000, gasPrice: 1 });
         } else {
             throw ('no contract WelfareFund setup');
         }
-    }
+    },
+    payIn: (value) => {
+        console.log('paying value: ', value);
+        return contracts.WelfareFund.functions.payIn({ gasLimit: 3000000, value: value });
+    },
+    withdraw: () => {
+        return contracts.WelfareFund.functions.claimPayOut();
+    },
+    getPayIn: async (addr) => {
+        return contracts.WelfareFund.functions.getPayIn(addr);
+    },
+    claimPayOut: () => {return {payoutAmount: 740};
+    },          
+    isJoined: async (addr) => {
+        return contracts.WelfareFund.functions.isJoined(addr);
+        // status: 'dead' //paying, dead, null
+    },
 };

@@ -1,119 +1,94 @@
-<script>
-    import wallet from '../stores/wallet';
-    import eth from '../eth';
-    import annuity from '../math/annuity';
-    import { beforeUpdate, afterUpdate } from 'svelte';
-
-    let monthlyPayIn = 0;
-    let monthlyPayOut = 0;
-    let inputJoiningAge = 18;
-    let inputRetirementAge = 60;
-    let last_monthlyPayIn = 0;
-    let last_monthlyPayOut = 0;
-
-    $: isValidRetirementAge = inputRetirementAge > inputJoiningAge ?
-        '' : 'border: 1px solid  #ff2968; color: #ff2968;'
-    $: ytr = parseInt(inputRetirementAge) - parseInt(inputJoiningAge)
-    $: yearsTillRetire = ytr > 0 ? 'After ' + ytr + ' years...' : 'Invalid age selection'
-
-
-    afterUpdate(() => {
-        inputJoiningAge = inputJoiningAge > 1 ? inputJoiningAge : 1;
-        let joiningAge = inputJoiningAge > 1 ? inputJoiningAge : 1;
-        let retirementAge = inputRetirementAge > inputJoiningAge ? inputRetirementAge : joiningAge;
-
-        if (last_monthlyPayIn != monthlyPayIn) {
-            monthlyPayOut = annuity.payOutPerMonth(retirementAge, joiningAge, monthlyPayIn);
-        } else if (last_monthlyPayOut != last_monthlyPayOut) {
-            monthlyPayIn = annuity.payInPerMonth(retirementAge, joiningAge, monthlyPayOut);
-        } else {
-            let mpi = annuity.payInPerMonth(retirementAge, joiningAge, monthlyPayOut)
-            monthlyPayIn = isNaN(mpi) ? last_monthlyPayIn : mpi;
-        }
-        last_monthlyPayIn = monthlyPayIn;
-        last_monthlyPayOut = monthlyPayOut;
-    });
-
-</script>
+<svelte:head>
+    <title>Transit Fund</title>
+</svelte:head>
 
 <style>
-    .harold-form {
-        width: 50px;
+
+    header {
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #f2f2fa;
     }
 
-    #harold-ages {
-        border-bottom: #616161 solid 1px;
+    button {
+        background: transparent;
+        border: #00e8d5 1px solid;
+        color: #00e8d5;
     }
 
-    label {
-        font-size: 20px;
-        margin: 10px 0 10px 0;
+    .index-section {
+        padding: 2rem
     }
 
-    input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        border: 1px solid #ffffff;
-        height: 18px;
-        width: 18px;
-        border-radius: 2px;
-        background: #ff2968;
-        cursor: pointer;
-        box-shadow: 1px 1px 1px #616161, 0px 0px 1px #0d0d0d;
-    }
 </style>
 
-<section>
-    <h1> Explore your pension plan </h1>
 
-    <div class="d-flex flex-row align-items-center mb-1">
-        <span style="font-size: 15px; color: #00e8d5; padding-right: 10px">
-            <i class="fas fa-user-astronaut"></i>
+<header class="d-flex flex-column align-items-center">
+    <img  class="logo-img" alt="Transit" lass="logo-img" src="logo_invert.png">
+    <button on:click="{ () => {window.location.href="actions"}}">JOIN Transit</button>
+</header>
+
+<section class="container-fluid index-section" style="text-align: center">
+
+    <h1>What is Transit?</h1>
+    <div class="row">
+
+    <div class="col-sm">
+        <span style="font-size: 47px; color: #00e8d5; padding-right: 10px">
+            <i class="fas fa-users"></i>
         </span>
-        <h4 id='account'>
-            {($wallet.address && $wallet.status == 'Ready') ? $wallet.address : 'Web3 account not available'}</h4>
+        <h4 class="h5"> Transit is a cooperatively owned Pension Plan based on the Ethereum Network</h4>
     </div>
-
-    <form id="harold-ages" class="d-flex flex-row justify-content-between py-3">
-        <div class="d-flex flex-column mb-3 align-items-start">
-            <h3 class="bd-highlight">Your age</h3>
-            <input type="text" class="harold-form" style="" bind:value={inputJoiningAge}>
-        </div>
-
-        <div class="d-flex flex-column mb-3 align-items-start">
-            <h3 class="bd-highlight">Retirement age</h3>
-            <input type="text" class="harold-form" style="{isValidRetirementAge}" bind:value={inputRetirementAge}>
-        </div>
-    </form>
+    <div class="col-sm">
+        <span style="font-size: 47px; color: #00e8d5; padding-right: 10px">
+            <i class="fas fa-dharmachakra"></i>
+        </span>
+        <h4 class="h5">No stockholders. No corporations. Run entirely by those who invest in it</h4>
+    </div>
+    <div class="col-sm">
+        <span style="font-size: 47px; color: #00e8d5; padding-right: 10px">
+            <i class="far fa-hand-point-down"></i>        
+        </span>
+        <h4 class="h5">YOU decide on your future financial security.</h4>
+    </div>
+    </div>
 
 </section>
 
+<section class="index-section" style="background: #616161">
 
-<section class="py-3 d-flex flex-column justify-content-between">
+    <h1>Why Transit</h1>
+    <h2> Cost </h2>
+    <p>As transit (compared to traditional provider) needs no infrastructure at all and just a few employees we can pass this cost advantage to our users.</p>
 
-    <div class="d-flex flex-row align-items-center mb-1">
-        <span style="font-size: 20px; color: #00e8d5; padding-right: 10px">
-            <i class="fa fa-wallet"></i>
-        </span>
-        <label for="monthlyPayInRange">Monthly Pay In: <span style="color: #ff2968">{monthlyPayIn.toFixed(1)}</span>
-            DAI</label>
-    </div>
+    <h2>Governance</h2>
 
-    <input bind:value={monthlyPayIn} type="range" class="custom-range" id="monthlyPayInRange" min="1" max="10000">
+    <p>With its integrated DAO transit offers a lot of governance tools: not only can certain decisions (investment strategy) be made by our members directly.</p>
+    <p>Members can vote on the most important positions in the administration every 4 year.</p>
 
-    <h2 class="py-4 my-1"><em> {yearsTillRetire} </em></h2>
 
-    <div class="d-flex flex-row justify-content-start align-items-center mb-1">
-        <span style="font-size: 20px; color: #00e8d5; padding-right: 10px">
-            <i class="fa fa-money-bill-alt"></i>
-        </span>
-        <label for="monthlyPayInRange">Monthly Pay Out: <span style="color: #ff2968">{monthlyPayOut.toFixed(1)}</span>
-            DAI</label>
-    </div>
+    <h2>Tokenization </h2>
 
-    <input bind:value={monthlyPayOut} type="range" class="custom-range" id="monthlyPayInRange" min="1" max="100000">
+    <p>You can tokenize your pension and give it to those who help you to make your retirement as comfortably as possible. Apart from a pure STO the transit-token can be given to those who care for you: your children, your elderly home or your retirement community in Florida. They will have an interest to treat you well.</p>
 
 </section>
 
-<footer class="fixed-bottom text-center mb-5">
-    <button on:click="{() => eth.join(inputJoiningAge, inputRetirementAge, monthlyPayIn)}">Create Your Plan</button>
-</footer>
+<!-- <section class="index-section">
+    <h1>How does this work?</h1>
+    <h3>1) Set you Pension Plan</h3>
+    <h3>2) Pay a monthly sum (or more!) in DAI</h3>
+    <h3>3) Participate via DAO on essential governance questions.</h3>
+    <h3>4) After your established retirement age, you’ll receive monthly payments.</h3>
+</section> -->
+
+
+<!-- <div id="mc_embed_signup">
+<form action="https://gmail.us3.list-manage.com/subscribe/post?u=fc6c50d83d805226f6635b795&amp;id=2bef0efc7b" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+    <div id="mc_embed_signup_scroll">
+    <label for="mce-EMAIL">Subscribe to our Simulation starting in November</label>
+    <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_fc6c50d83d805226f6635b795_2bef0efc7b" tabindex="-1" value=""></div>
+    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+    </div>
+</form>
+</div> -->
+
