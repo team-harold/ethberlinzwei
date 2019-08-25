@@ -16,10 +16,12 @@
     }
 
     async function checkStatus() { //
-        let l = await checkLocalStorage()
-        if (!l) {
+        let havePendingTx = await checkLocalStorage()
+        if (!havePendingTx) {
             checkUserContractStatus()
+            return true
         }
+        return false
     }
 
     async function checkLocalStorage () {
@@ -30,12 +32,17 @@
             let r = await eth.getTransactionReceipt(pendingTxString);
             if (r){
                 if ( r.status == 1) {
+                    console.log('transaction mined')
                     localStorage.removeItem($wallet.address)
+                    return false
+                } else {
+                    console.log('transaction failed')
                     return false
                 }
             } else {
                 console.log('status is pending again')
                 userStatus = {joined : 'pending', status: 'pending'}
+                return true
             }
         }
         return false
@@ -52,10 +59,20 @@
         console.log('userStatus: ', userStatus)
     }
 
+    async function updateStatus() {
+        console.log('update status')
+        let gotStatus = await checkStatus();
+        if (gotStatus) { return }
+        else {
+            setTimeout(updateStatus, 1000)
+        } 
+    }
+
     function handleTxPending (event){
         pendingMessage = event.detail.msg;
-        checkStatus()// setTime out? how to stop it
+        updateStatus()
     }
+
 
 
 
