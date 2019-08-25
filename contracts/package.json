@@ -15,5 +15,8 @@
     "rocketh-ethers": "^0.0.1",
     "solc": "^0.5.11",
     "tap": "^14.6.1"
+  },
+  "devDependencies": {
+    "bn.js": "^5.0.0"
   }
 }

@@ -40,11 +40,13 @@ function PresentValueImmediateAnnuity(x, i, n, lifeTable) { // x : when you reti
   var ax = 0
 
   for (var t = 1; x + t < n; t++) {
+    // JS can't handle x^y correctly!	
+    var vt = Math.pow((1 / (1 + i)), t);
 
     // why x-1 is not clear, but it fits the R package lifecontingencies
     var _tpx = tpx(x - 1, t, lifeTable);
 
-    ax = ax + (_tpx / Math.pow((1 + i), t));
+    ax = ax + (vt * _tpx);
 
     // Logger.log(t + ": age " + (x + t) + ": " +
     //   " + vt " + vt +

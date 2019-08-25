@@ -27,4 +27,16 @@ contract AlwaysEligibleUnlessDead is EligibilityOracle {
     function isEligible(address who, uint16 currentAge) external view returns (bool) {
         return members[who] && !_deathOracle.isDead(who);
     }
+
+
+
+    int256 _timeDelta;
+    function _getTime() internal view returns(uint256) {
+        return uint256(int256(block.timestamp) + _timeDelta);
+    }
+
+    function debug_addTimeDelta(int256 delta) external {
+        _timeDelta += delta;
+        _deathOracle.debug_addTimeDelta(delta);
+    }
 }

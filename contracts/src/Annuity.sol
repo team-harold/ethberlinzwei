@@ -22,7 +22,7 @@ contract Annuity {
         _interestBasedTable = presentValueCompoundInterestNominators;
     }
     
-    function payOutPerMonth(uint256 _retirementAge, uint256 _currentAge, uint256 _payInPerMonth) public returns (uint256 result){
+    function _payOutPerMonth(uint256 _retirementAge, uint256 _currentAge, uint256 _payInPerMonth) public returns (uint256 result){
       require(_retirementAge > _currentAge, "_retirementAge <= _currentAge");
       uint256 EVP_Out_x = calcPresentValueImmediateAnnuity(_retirementAge, _lifeTable.length);// div Precision
       uint256 EVP_Out = getPresentVNominator(_retirementAge - _currentAge) * EVP_Out_x; // div Precision

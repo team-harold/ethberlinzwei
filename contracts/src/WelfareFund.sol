@@ -7,14 +7,13 @@ import "./Annuity.sol";
 contract WelfareFund is Annuity {
 
     uint256 constant NUM_SECONDS_IN_A_YEAR = 31556952;
-    uint256 constant NUM_SECONDS_IN_A_MONTH = NUM_SECONDS_IN_A_YEAR / 12; // 2629746;
+    uint256 constant NUM_SECONDS_IN_A_MONTH = 2629746; //NUM_SECONDS_IN_A_YEAR / 12; // 2629746;
     uint256 constant NUM_SECONDS_BEFORE_PENALTY = NUM_SECONDS_IN_A_MONTH + 1 * 24*60*60; // 1 days
 
     struct Person {
         uint16 joiningAge; // we assume nobody can live more than 65535 years
-        uint120 payInPerSecond;
-        uint120 payOutPerSecond;
-        uint64 lastPaymnentTime;
+        uint120 payInPerMonth;
+        uint120 payOutPerMonth;
         uint64 retirementTime;
         uint64 startTime;
         uint128 contribution;
@@ -42,18 +41,25 @@ contract WelfareFund is Annuity {
         _init = true;
     }
 
-    function join(uint16 joiningAge, uint16 retirementAge, uint128 monthlyPayIn) external payable {
+    event Joined(address who, uint120 payOutPerMonth, uint120 payInPerMonth, uint64 startTime, uint64 retirementTime);
+
+    function join(uint16 joiningAge, uint16 retirementAge, uint120 monthlyPayIn) external payable {
         require(joiningAge > 0, "need to have lived at least one year");
         require(_persons[msg.sender].joiningAge == 0, "cannot register twice");
-        uint256 monthlyPayOut = payOutPerMonth(retirementAge, joiningAge, monthlyPayIn);
+        uint120 payOutPerMonth = uint120(_payOutPerMonth(retirementAge, joiningAge, monthlyPayIn));
         uint16 numYears = retirementAge - joiningAge;
+        uint64 retirementTime = uint64(_getTime() + numYears * NUM_SECONDS_IN_A_YEAR);
+        uint64 startTime = uint64(_getTime());
         _persons[msg.sender].joiningAge = joiningAge;
-        _persons[msg.sender].payOutPerSecond = uint120(monthlyPayOut * NUM_SECONDS_IN_A_MONTH);
-        _persons[msg.sender].payInPerSecond = uint120(monthlyPayIn * NUM_SECONDS_IN_A_MONTH);
-        _persons[msg.sender].retirementTime = uint64(block.timestamp + numYears * NUM_SECONDS_IN_A_YEAR);
-        _persons[msg.sender].startTime = uint64(block.timestamp);
-        _payIn();
+        _persons[msg.sender].payOutPerMonth = payOutPerMonth;
+        _persons[msg.sender].payInPerMonth = monthlyPayIn;
+        _persons[msg.sender].retirementTime = retirementTime;
+        _persons[msg.sender].startTime = startTime;
+        emit Joined(msg.sender, payOutPerMonth, monthlyPayIn, startTime, retirementTime);
         _eligibilityOracle.onJoined(msg.sender, joiningAge);
+        if(msg.value > 0) {
+            _payIn();
+        }
     }
 
     function payIn() external payable {
@@ -63,38 +69,38 @@ contract WelfareFund is Annuity {
     function _payIn() internal {
         uint256 retirementTime = _persons[msg.sender].retirementTime;
         uint256 startTime = _persons[msg.sender].startTime;
-        uint256 payInPerSecond = _persons[msg.sender].payInPerSecond;
+        uint256 payInPerMonth = _persons[msg.sender].payInPerMonth;
         uint256 currentContribution = _persons[msg.sender].contribution;
-        require(msg.value <= (retirementTime - startTime) * payInPerSecond - currentContribution, "over pay"); // TODO refund ?
+        // TODO :  reenable : require(msg.value <= ((retirementTime - startTime) * payInPerMonth / NUM_SECONDS_IN_A_MONTH) - currentContribution, "over pay"); // TODO refund ?
 
-        uint256 minTime = block.timestamp;
+        uint256 minTime = _getTime();
         if(minTime > retirementTime) {
             minTime = retirementTime;
         }
-        uint256 expectedContribution = (minTime - _persons[msg.sender].startTime) * payInPerSecond;
+        uint256 expectedContribution = ((minTime - _persons[msg.sender].startTime) * payInPerMonth) / NUM_SECONDS_IN_A_MONTH;
         uint256 diff = expectedContribution - currentContribution;
         uint256 penalty = 0;
-        if(diff / payInPerSecond > NUM_SECONDS_BEFORE_PENALTY) {
-            penalty = ((diff / payInPerSecond) / NUM_SECONDS_BEFORE_PENALTY) * 1; // TODO
+        if(diff / payInPerMonth > 2) {
+            penalty = ((diff / payInPerMonth) / 2) * 1; // TODO
         }
         _persons[msg.sender].contribution = uint120(currentContribution + msg.value);
     }
 
     function claimPayOut() external {
         uint256 retirementTime = _persons[msg.sender].retirementTime;
-        require(block.timestamp > retirementTime, "not retired yet");
+        require(_getTime() > retirementTime, "not retired yet");
 
         uint256 startTime = _persons[msg.sender].startTime;
         uint256 currentContribution = _persons[msg.sender].contribution;
-        require(currentContribution >= (retirementTime - startTime) * _persons[msg.sender].payInPerSecond, "did not pay all");
+        require(currentContribution >= ((retirementTime - startTime) * _persons[msg.sender].payInPerMonth) / NUM_SECONDS_IN_A_MONTH, "did not pay all");
 
         uint256 joiningAge = _persons[msg.sender].joiningAge;
         
-        uint16 currentAge = uint16(joiningAge + (block.timestamp - startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
-        require(!_eligibilityOracle.isEligible(msg.sender, currentAge), "not eligible");
+        uint16 currentAge = uint16(joiningAge + (_getTime() - startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
+        require(_eligibilityOracle.isEligible(msg.sender, currentAge), "not eligible");
         uint256 totalPaidOut = _persons[msg.sender].totalPaidOut;
-        uint128 payOutPerSecond = _persons[msg.sender].payOutPerSecond;
-        uint256 toPay = (block.timestamp - retirementTime) * payOutPerSecond;
+        uint128 payOutPerMonth = _persons[msg.sender].payOutPerMonth;
+        uint256 toPay = ((_getTime() - retirementTime) * payOutPerMonth) / NUM_SECONDS_IN_A_MONTH;
         uint120 diff = uint120(toPay - totalPaidOut);
         msg.sender.transfer(diff);
         _persons[msg.sender].totalPaidOut += diff;
@@ -105,7 +111,7 @@ contract WelfareFund is Annuity {
         if(startTime == 0) {
             return 0;
         }
-        return startTime + (_persons[who].contribution / _persons[who].payInPerSecond) + NUM_SECONDS_BEFORE_PENALTY;
+        return startTime + (_persons[who].contribution / _persons[who].payInPerMonth) * NUM_SECONDS_IN_A_MONTH + 2; // TODO fix
     }
 
     function getPayIn(address who) external view returns (
@@ -117,18 +123,20 @@ contract WelfareFund is Annuity {
     ){
         uint256 startTime = _persons[who].startTime;
         joined = startTime != 0;
-        nextPaymentDueOn = startTime + (_persons[who].contribution / _persons[who].payInPerSecond) + NUM_SECONDS_BEFORE_PENALTY;
-        amountDue = _persons[who].payInPerSecond * NUM_SECONDS_IN_A_MONTH;
+        if(joined) {
+            nextPaymentDueOn = startTime + (_persons[who].contribution / _persons[who].payInPerMonth) * NUM_SECONDS_IN_A_MONTH + 2; // TODO fix
+        }
+        amountDue = _persons[who].payInPerMonth;
         amountPaid = _persons[who].contribution;
         timeRetire = _persons[who].retirementTime;
     }
 
-    function getPayOutPerSecond(address who) external view returns(uint256){
-        return _persons[who].payOutPerSecond;
+    function getPayOutPerMonth(address who) external view returns(uint256){
+        return _persons[who].payOutPerMonth;
     }
 
-    function getPayInPerSecond(address who) external view returns(uint256){
-        return _persons[who].payInPerSecond;
+    function getPayInPerMonth(address who) external view returns(uint256){
+        return _persons[who].payInPerMonth;
     }
 
     enum Status {retired, paying, dead}
@@ -139,10 +147,25 @@ contract WelfareFund is Annuity {
         bool isDead = _deathOracle.isDead(who);
         if (isDead) status = Status.dead;
         else {
-            bool isRetired = block.timestamp > _persons[who].retirementTime;
+            bool isRetired = _getTime() > _persons[who].retirementTime;
             if (isRetired) status = Status.retired;
             else status = Status.paying;
         }
         joined = _persons[who].joiningAge > 0;
+    }
+
+
+    int256 _timeDelta;
+    function _getTime() internal view returns(uint256) {
+        return uint256(int256(block.timestamp) + _timeDelta);
+    }
+
+    function getTime() external view returns(uint256) {
+        return _getTime();
+    }
+
+    function debug_addTimeDelta(int256 delta) external {
+        _timeDelta += delta;
+        _eligibilityOracle.debug_addTimeDelta(delta);
     }
 }
