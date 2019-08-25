@@ -41,6 +41,7 @@
     async function join() {
         try {
             let txObj = await eth.join(inputJoiningAge, inputRetirementAge, monthlyPayIn)
+            console.log('txObject: ', txObj )
             localStorage.setItem($wallet.address, txObj.hash)
             dispatch('txPending', {msg: ' 🧐 Congrats to adulthood! We are setting you up.'})
         } catch (e) { console.log(e) }

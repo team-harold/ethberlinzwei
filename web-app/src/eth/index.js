@@ -32,9 +32,10 @@ export default {
     join: (joiningAge, retirementAge, monthlyPayIn) => {
         console.log("joiningAge: ", joiningAge);
         console.log("retirementAge: ", retirementAge);
-        console.log("monthlyPayIn: ", monthlyPayIn)
+        console.log("monthlyPayIn: ", monthlyPayIn);
         if (contracts.WelfareFund) {
-            return contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000, gasPrice: 1 });
+            console.log("submitting");
+            return contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000 });
         } else {
             throw ('no contract WelfareFund setup');
         }
