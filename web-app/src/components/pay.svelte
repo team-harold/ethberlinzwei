@@ -14,7 +14,7 @@
         console.log("pay in data: ", payInData)
 
     })
-    $:paymentDue = payInData.amountDue ? payInData.amountDue/1e18: ''
+    $:paymentDue = payInData.amountDue ? payInData.amountDue: ''
     $:amountPaid = payInData.amountPaid ? payInData.amountPaid : ''
     $:timeRetire = payInData.timeRetire ? getDateString(payInData.timeRetire.toNumber()*1000) : ''
     $:timeDue = payInData.nextPaymentDueOn ? getDateString(payInData.nextPaymentDueOn.toNumber()*1000) : ''
