@@ -6,9 +6,10 @@
     import Pay from '../components/pay.svelte';
     import Dead from '../components/dead.svelte';
     import Pending from '../components/pending.svelte';
-    import { onMount, beforeUpdate, afterUpdate } from 'svelte';
+    import { beforeUpdate, afterUpdate } from 'svelte';
 
     let userStatus = {joined : null, status: null}
+    let pendingMessage = ''
 
     $: if($wallet.address) {
         checkStatus()
@@ -46,17 +47,24 @@
         console.log('userStatus: ', userStatus)
     }
 
+    function handleTxPending (event){
+        pendingMessage = event.detail.msg;
+        checkStatus()// setTime out? how to stop it
+    }
+
+
+
 </script>
 
 
 {#if !userStatus.joined && userStatus.status == 'retired'}
-	<Create /> // on:txEvent = "init()"
+	<Create on:txPending={handleTxPending}/> 
 {:else if !userStatus}
-	<Pending message={"Loading accounts"}/>
+	<Pending/>
 {:else if userStatus.joined && userStatus.status == "paying"}
-	<Pay status={"paying"}/>
+	<Pay status={"paying"} on:txPending={handleTxPending}/>
 {:else if userStatus.joined && userStatus.status == "retired"}
-	<Pay status={"retired"}/>
+	<Pay status={"retired"} on:txPending={handleTxPending}/>
 {:else if userStatus.joined && userStatus.status == "dead"}
 	<Dead/>
 {/if}

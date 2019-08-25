@@ -118,7 +118,7 @@ contract WelfareFund is Annuity {
         uint256 startTime = _persons[who].startTime;
         joined = startTime != 0;
         nextPaymentDueOn = startTime + (_persons[who].contribution / _persons[who].payInPerSecond) + NUM_SECONDS_BEFORE_PENALTY;
-        amountDue = _persons[who].payOutPerSecond * NUM_SECONDS_IN_A_MONTH;
+        amountDue = _persons[who].payInPerSecond * NUM_SECONDS_IN_A_MONTH;
         amountPaid = _persons[who].contribution;
         timeRetire = _persons[who].retirementTime;
     }

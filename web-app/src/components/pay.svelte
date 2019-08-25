@@ -3,8 +3,10 @@
     import eth from '../eth';
     import annuity from '../math/annuity';
     import Modal from './Modal.svelte';
-    import {onMount, beforeUpdate, afterUpdate } from 'svelte';
+    import {onMount, beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
     export let status;
+
+    const dispatch = createEventDispatcher();
 
     let payInData = []
     onMount( async() => {
@@ -16,7 +18,7 @@
     $:amountPaid = payInData.amountPaid ? payInData.amountPaid.toString(10) : ''
     $:timeRetire = payInData.timeRetire ? payInData.timeRetire.toString(10) : ''
     $:timeDue = payInData.nextPaymentDueOn ? payInData.nextPaymentDueOn.toString() : ''
-    
+
 </script>
 
 <style>

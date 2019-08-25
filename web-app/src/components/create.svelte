@@ -3,7 +3,9 @@
     import eth from '../eth';
     import annuity from '../math/annuity';
     import Modal from './Modal.svelte';
-    import { beforeUpdate, afterUpdate } from 'svelte';
+    import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';	
+
+    const dispatch = createEventDispatcher();
 
     let monthlyPayIn = 12;
     let monthlyPayOut = 12;
@@ -37,10 +39,13 @@
     });
 
     async function join() {
-        let txObj = await eth.join(inputJoiningAge, inputRetirementAge, monthlyPayIn)
-        console.log("txObj: ", txObj)
-        console.log("txHash: ", txObj.hash)
-        localStorage.setItem($wallet.address, txObj.hash)
+        try {
+            let txObj = await eth.join(inputJoiningAge, inputRetirementAge, monthlyPayIn)
+            localStorage.setItem($wallet.address, txObj.hash)
+            dispatch('txPending', {msg: ''})
+        } catch (e) {
+            console.log(e)
+        }
     }
 
 </script>
