@@ -186,5 +186,40 @@ export default (() => {
         })();
         return promise;
     }
-    return { load, subscribe };
+
+    async function unlock() {
+        log.info('Requesting unlock');
+        _set({
+            status: 'Unlocking'
+        });
+        let accounts;
+        try {
+            accounts = await window.ethereum.enable();
+        } catch (e) {
+            // try {
+            //     log.info('trying accounts...', e);
+            //     accounts = await window.web3.eth.getAccounts();
+            // } catch(e) {
+            //     log.info('no accounts', e);
+            accounts = [];
+            // }
+        }
+
+        if (accounts.length > 0) {
+            lastAccount = accounts[0];
+            _set({
+                address: accounts[0],
+                status: 'Unlocking'
+            });
+        } else {
+            _set({
+                status: 'Locked'
+            });
+            return false;
+        }
+
+        return true;
+    }
+
+    return { load, unlock, subscribe };
 })();
