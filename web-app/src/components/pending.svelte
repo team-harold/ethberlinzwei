@@ -7,17 +7,6 @@
     export let message;
 </script>
 
-<style>
-
-h5 {
-    color: #f7f7fa;
-    font-size: 18px;
-    margin: 0
-}
-
-
-</style>
-
 <header>
     <img alt="Transit" class="logo-img" src="logo_invert.png">
 </header>

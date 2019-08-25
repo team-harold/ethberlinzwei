@@ -42,10 +42,8 @@
         try {
             let txObj = await eth.join(inputJoiningAge, inputRetirementAge, monthlyPayIn)
             localStorage.setItem($wallet.address, txObj.hash)
-            dispatch('txPending', {msg: ''})
-        } catch (e) {
-            console.log(e)
-        }
+            dispatch('txPending', {msg: ' 🧐 Congrats to adulthood! We are setting you up.'})
+        } catch (e) { console.log(e) }
     }
 
 </script>

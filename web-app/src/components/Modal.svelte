@@ -27,10 +27,6 @@
         border-radius: 0.2em;
         background: #f7f7f7
 	}
-
-	button {
-		display: block;
-	}
 </style>
 
 <div class='modal-background' on:click='{() => dispatch("close")}'>

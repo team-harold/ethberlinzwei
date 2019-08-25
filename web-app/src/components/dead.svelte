@@ -6,20 +6,6 @@
     import { beforeUpdate, afterUpdate } from 'svelte';
 </script>
 
-<style>
-
-h5 {
-    color: #f7f7fa;
-    font-size: 18px;
-    margin: 0
-}
-
-#payin-btn {
-    border-bottom: 1px solid #f2f2fa;
-}
-
-</style>
-
 <header>
     <img alt="Transit" class="logo-img" src="logo_invert.png">
 </header>

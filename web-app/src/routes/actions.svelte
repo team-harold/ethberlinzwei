@@ -8,8 +8,8 @@
     import Pending from '../components/pending.svelte';
     import { beforeUpdate, afterUpdate } from 'svelte';
 
-    let userStatus = {joined : null, status: null}
-    let pendingMessage = ''
+    let userStatus = {joined : 'pending', status: 'pending'}
+    let pendingMessage = 'Getting your account info!'
 
     $: if($wallet.address) {
         checkStatus()
@@ -28,9 +28,14 @@
         console.log("pendingTxString: ", pendingTxString)
         if (pendingTxString) {
             let r = await eth.getTransactionReceipt(pendingTxString);
-            if (r.status == 1){
-                localStorage.removeItem($wallet.address)
-                return false
+            if (r){
+                if ( r.status == 1) {
+                    localStorage.removeItem($wallet.address)
+                    return false
+                }
+            } else {
+                console.log('status is pending again')
+                userStatus = {joined : 'pending', status: 'pending'}
             }
         }
         return false
@@ -59,8 +64,8 @@
 
 {#if !userStatus.joined && userStatus.status == 'retired'}
 	<Create on:txPending={handleTxPending}/> 
-{:else if !userStatus}
-	<Pending/>
+{:else if userStatus.joined == 'pending' && userStatus.status == 'pending'}
+	<Pending message={pendingMessage}/>
 {:else if userStatus.joined && userStatus.status == "paying"}
 	<Pay status={"paying"} on:txPending={handleTxPending}/>
 {:else if userStatus.joined && userStatus.status == "retired"}
