@@ -35,25 +35,25 @@ export default {
         console.log("monthlyPayIn: ", monthlyPayIn);
         if (contracts.WelfareFund) {
             console.log("submitting");
-            return contracts.WelfareFund.functions.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000 });
+            return contracts.WelfareFund.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000 });
         } else {
             throw ('no contract WelfareFund setup');
         }
     },
     payIn: (value) => {
         console.log('paying value: ', value);
-        return contracts.WelfareFund.functions.payIn({ gasLimit: 3000000, value: value });
+        return contracts.WelfareFund.payIn({ gasLimit: 3000000, value: value });
     },
     withdraw: () => {
-        return contracts.WelfareFund.functions.claimPayOut();
+        return contracts.WelfareFund.claimPayOut();
     },
     getPayIn: async (addr) => {
-        return contracts.WelfareFund.functions.getPayIn(addr);
+        return contracts.WelfareFund.getPayIn(addr);
     },
     claimPayOut: () => {return {payoutAmount: 740};
     },          
     isJoined: async (addr) => {
-        return contracts.WelfareFund.functions.isJoined(addr);
+        return contracts.WelfareFund.isJoined(addr);
         // status: 'dead' //paying, dead, null
     },
 };

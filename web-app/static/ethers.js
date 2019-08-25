@@ -12019,8 +12019,10 @@ var JsonRpcSigner = /** @class */ (function (_super) {
         });
     };
     JsonRpcSigner.prototype.sendTransaction = function (transaction) {
-        var _this = this;
-        return this.sendUncheckedTransaction(transaction).then(function (hash) {
+      var _this = this;
+      return this.sendUncheckedTransaction(transaction).then(function (hash) {
+        console.log("hash: ", hash)
+        return Promise.resolve({hash: hash, wait:() => {}});
             return web_1.poll(function () {
                 return _this.provider.getTransaction(hash).then(function (tx) {
                     if (tx === null) {

@@ -22,6 +22,7 @@
         try {
             console.log("paymentDue: ", paymentDue)
             let txObj = await eth.payIn(payInData.amountDue)
+            console.log('txObj: ', txObj)
             localStorage.setItem($wallet.address, txObj.hash)
             dispatch('txPending', {msg: 'Confirming your new payment! 😊'})
         } catch (e) { console.log(e) }
