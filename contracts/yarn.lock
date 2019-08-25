@@ -6569,10 +6569,10 @@ rlp@^2.0.0, rlp@^2.2.1:
     bn.js "^4.11.1"
     safe-buffer "^5.1.1"
 
-rocketh-ethers@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/rocketh-ethers/-/rocketh-ethers-0.0.1.tgz#5af62f1540f570f572e26dc55586d09be8fdd148"
-  integrity sha512-AsU3prq1zWXp94L6XHSz7zFnVQngGxTGYYgh/Tt+VilNsMd+1BXfMC89TQ+T+xmrIswE8HHwq0py0lSIVkL4cw==
+rocketh-ethers@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/rocketh-ethers/-/rocketh-ethers-0.0.2.tgz#85972d929be1fba370c081b495fe9f1362a4d637"
+  integrity sha512-jn0HY53RnyfzEQyczdMxyr/89qaoOc6baQI6/0wVYLHvGZJQd9s2MlTr+n0wqFAGhxZ7SkIXs2PW3tRxBdt3wg==
 
 rocketh@^0.2.41:
   version "0.2.41"
