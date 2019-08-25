@@ -14,14 +14,14 @@
         console.log("pay in data: ", payInData)
 
     })
-    $:paymentDue = payInData.amountDue ? payInData.amountDue/1e18: ''
+    $:paymentDue = payInData.amountDue ? payInData.amountDue: ''
     $:amountPaid = payInData.amountPaid ? payInData.amountPaid : ''
     $:timeRetire = payInData.timeRetire ? getDateString(payInData.timeRetire.toNumber()*1000) : ''
     $:timeDue = payInData.nextPaymentDueOn ? getDateString(payInData.nextPaymentDueOn.toNumber()*1000) : ''
     async function payIn() {
         try {
             console.log("paymentDue: ", paymentDue)
-            let txObj = await eth.payIn(paymentDue.toString()   )
+            let txObj = await eth.payIn(payInData.amountDue)
             localStorage.setItem($wallet.address, txObj.hash)
             dispatch('txPending', {msg: 'Confirming your new payment! 😊'})
         } catch (e) { console.log(e) }
@@ -67,7 +67,7 @@ h5 {
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-money-bill"></i>
         </span>
-        <h5>You next monthly payment is <span style="color: #ff2968">{paymentDue} DAI</span></h5>
+        <h5>You next monthly payment is <span style="color: #ff2968">{paymentDue}</span> DAI </h5>
     </div>
 
     <div class="d-flex flex-row align-items-center my-1">
