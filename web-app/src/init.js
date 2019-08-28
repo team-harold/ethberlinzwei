@@ -13,26 +13,33 @@ function findGetParameter(parameterName) {
     return result;
 }
 
-export default () => {
-    let chainId = 4;
-
-    const supportedChainIds = Object.keys(contractsInfo);
-    if (supportedChainIds.length == 1) {
-        chainId = supportedChainIds[0];
+export default async () => {
+    let supportedChainIds = Object.keys(contractsInfo);
+    let fallbackUrl;
+    if(contractsInfo['1']) {
+        fallbackUrl = 'https://mainnet.infura.io/v3/c985560c1dc04aed8f2c0300aa5f5efa';
+    } else if(contractsInfo['4']) {
+        fallbackUrl = 'https://rinkeby.infura.io/v3/c985560c1dc04aed8f2c0300aa5f5efa';
+    } else {
+        fallbackUrl = 'http://localhost:8545';
     }
-
     if (process.browser) {
-        chainId = findGetParameter('chainId') || chainId;
+        fallbackUrl = findGetParameter('fallbackUrl') || fallbackUrl;
     }
 
-    wallet.load(chainId, async () => {
-        const currentChainId = await eth.fetchChainId();
-        if (chainId == currentChainId) {
-            try {
+    await wallet.load({fallbackUrl, supportedChainIds}, ($wallet) => {
+        if($wallet && $wallet.chainId) {
+            const chainId = $wallet.chainId;
+            if (contractsInfo[chainId]) {
                 console.log('setting up contract for chainId', contractsInfo[chainId]);
                 eth.setupContracts(contractsInfo[chainId]);
-            } catch (e) {
-                console.log('no contract for chainId ' + currentChainId);
+            } else {
+                console.log('no contract for chainId ' + chainId);
+            }
+        } else {
+            if (process.browser) {
+                // TODO ?
+                console.log('could not compute $wallet.chainId');
             }
         }
     });

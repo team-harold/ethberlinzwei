@@ -17,7 +17,7 @@ export default {
             signer = provider.getSigner();
         }
     },
-    fetchChainId: () => provider.getNetwork().then((net) => net.chainId),
+    fetchChainId: () => provider.getNetwork().then((net) => "" + net.chainId),
     fetchAccounts: () => signer ? provider.listAccounts() : [],
     setupContracts: (contractsInfo) => {
         for (let key of Object.keys(contractsInfo)) {

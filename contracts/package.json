@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "dev": "rocketh launch -q ../web-app/src/contractsInfo.json",
     "test-localhost": "rocketh launch -n http://localhost:8545 tap -T -j 1 -R spec test/**/test*",
     "test": "rocketh launch tap -T -j 1 -R spec test/**/test*",
     "smartcheck": "smartcheck -p ."

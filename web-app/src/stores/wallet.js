@@ -15,10 +15,6 @@ function reloadPage(reason, instant) {
     }
 }
 
-function fallback(callback) {
-    eth._setup('https://rinkeby.infura.io/v3/c985560c1dc04aed8f2c0300aa5f5efa');
-    if (callback) { callback(); }
-}
 let $wallet = {};
 export default (() => {
     const { subscribe, set, update } = writable();
@@ -107,29 +103,40 @@ export default (() => {
     }
 
     let promise;
-    async function load(chainIdExpected, callback) { // TODO allow chainId to be provided as an array and also as a promise return function
+    async function load({fallbackUrl, supportedChainIds}, setup) {
         if (!process.browser) {
             _set({ status: 'Loading' });
-            return true;
+            return $wallet;
         }
         if (promise) {
             return promise;
         }
+
         promise = (async () => {
             _set({ status: 'Loading' });
             const ethereum = getEthereum();
 
             if (ethereum) {
                 eth._setup(ethereum);
-                if (callback) { callback(); }
                 watch();
             } else {
-                fallback(callback);
+                eth._setup(fallbackUrl);
+                let chainId;
+                try {
+                    chainId = await eth.fetchChainId();
+                } catch (e) {
+
+                }
                 _set({
                     status: 'NoWallet',
-                    readOnly: true
+                    readOnly: true,
+                    chainId
                 });
-                return;
+                if(chainId) {
+                    return $wallet;
+                } else {
+                    return $wallet;
+                }
             }
             log.info('web3 is there...');
             log.info('checking chainId...');
@@ -137,7 +144,8 @@ export default (() => {
             try {
                 chainId = await eth.fetchChainId();
             } catch (e) {
-                fallback();
+                console.error(e);
+                eth._setup(fallbackUrl);
                 if (navigator.userAgent.indexOf("Opera") != -1 ||
                     navigator.userAgent.indexOf("OPR/") != -1) {
                     log.info('Opera web3 quircks');
@@ -152,12 +160,12 @@ export default (() => {
                         readOnly: true
                     });
                 }
-                return;
+                return $wallet;
             }
 
             _set({ chainId });
 
-            if (chainId == chainIdExpected) {
+            if (supportedChainIds.indexOf(chainId) >= 0) {
                 let accounts;
                 try {
                     log.info('getting accounts..');
@@ -177,12 +185,17 @@ export default (() => {
                 }
             } else {
                 log.info('wrong chain');
-                fallback();
+                eth._setup(fallbackUrl);
                 _set({
                     status: 'WrongChain',
                     readOnly: true
                 });
             }
+            if(setup) {
+                setup($wallet);
+            }
+            // console.log('$wallet', $wallet);
+            return $wallet;
         })();
         return promise;
     }
