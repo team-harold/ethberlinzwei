@@ -253,30 +253,7 @@ export default (() => {
             options = undefined;
         }
         if(options && options.from && options.from.length > 42) {
-            // TODO
-            // const privateKey = options.from;
-            // const from = web3.eth.accounts.privateKeyToAccount(privateKey).address;
-            // const nonce = web3.utils.toHex(options.nonce || await web3.eth.getTransactionCount(from));
-            // const gas = web3.utils.toHex(options.gas);
-            // const value = options.value || "0x0";
-            // const gasPrice = options.gasPrice || await web3.eth.getGasPrice();
-            // let data = options.data;
-            // let to = options.to;
-            // if(contract) {
-            //     to = contract.options.address;
-            //     data = contract.methods[methodName](...args).encodeABI();
-            // }
-            // const txOptions = {
-            //     from,
-            //     nonce,
-            //     gas,
-            //     value,
-            //     gasPrice,
-            //     data,
-            //     to
-            // };
-            // const signedTx = await web3.eth.accounts.signTransaction(txOptions, privateKey);
-            // return web3.eth.sendSignedTransaction(signedTx.rawTransaction);                    
+            console.error('TODO : privateKey based tx');
         } else {
             if(contract) {
                 const ethersContract = contracts[contract];
@@ -291,7 +268,7 @@ export default (() => {
                 };
                 addPendingTransaction(pendingTx);
             } else {
-                // TODO return web3.eth.sendTransaction(options);
+                console.error('TODO send raw tx');
             }
         }
     }
