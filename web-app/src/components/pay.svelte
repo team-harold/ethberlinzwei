@@ -79,7 +79,7 @@ h5 {
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
-        <button on:click="{payIn}"> Make Payment </button>
+        <button on:click="{() => wallet.tx({value: paymentDue}, 'WelfareFund', 'payIn')}"> Make Payment </button>
     </div>
 
 </section>

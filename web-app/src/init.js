@@ -32,7 +32,7 @@ export default async () => {
             const chainId = $wallet.chainId;
             if (contractsInfo[chainId]) {
                 console.log('setting up contract for chainId', contractsInfo[chainId]);
-                eth.setupContracts(contractsInfo[chainId]);
+                return eth.setupContracts(contractsInfo[chainId]);
             } else {
                 console.log('no contract for chainId ' + chainId);
             }
@@ -42,5 +42,6 @@ export default async () => {
                 console.log('could not compute $wallet.chainId');
             }
         }
+        return {};
     });
 };

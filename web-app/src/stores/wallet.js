@@ -18,6 +18,7 @@ function reloadPage(reason, instant) {
 let $wallet = {};
 export default (() => {
     const { subscribe, set, update } = writable();
+    let contracts;
     function _set(obj) {
         for (let key of Object.keys(obj)) {
             $wallet[key] = obj[key];
@@ -192,7 +193,7 @@ export default (() => {
                 });
             }
             if(setup) {
-                setup($wallet);
+                contracts = setup($wallet);
             }
             // console.log('$wallet', $wallet);
             return $wallet;
@@ -219,7 +220,6 @@ export default (() => {
         }
 
         if (accounts.length > 0) {
-            lastAccount = accounts[0];
             _set({
                 address: accounts[0],
                 status: 'Unlocking'
@@ -234,5 +234,128 @@ export default (() => {
         return true;
     }
 
-    return { load, unlock, subscribe };
+    async function ensureEnabled() {
+        if($wallet.status === 'Locked') {
+            await unlock();
+        }
+        return $wallet;
+    }
+
+    async function tx(options, contract, methodName, ...args) {
+        const w = await ensureEnabled();
+        if(!w || !w.address) {
+            throw new Error('Can\'t perform tx');
+        }
+        if(typeof options === 'string') {
+            args.unshift(methodName);
+            methodName = contract;
+            contract = options;
+            options = undefined;
+        }
+        if(options && options.from && options.from.length > 42) {
+            // TODO
+            // const privateKey = options.from;
+            // const from = web3.eth.accounts.privateKeyToAccount(privateKey).address;
+            // const nonce = web3.utils.toHex(options.nonce || await web3.eth.getTransactionCount(from));
+            // const gas = web3.utils.toHex(options.gas);
+            // const value = options.value || "0x0";
+            // const gasPrice = options.gasPrice || await web3.eth.getGasPrice();
+            // let data = options.data;
+            // let to = options.to;
+            // if(contract) {
+            //     to = contract.options.address;
+            //     data = contract.methods[methodName](...args).encodeABI();
+            // }
+            // const txOptions = {
+            //     from,
+            //     nonce,
+            //     gas,
+            //     value,
+            //     gasPrice,
+            //     data,
+            //     to
+            // };
+            // const signedTx = await web3.eth.accounts.signTransaction(txOptions, privateKey);
+            // return web3.eth.sendSignedTransaction(signedTx.rawTransaction);                    
+        } else {
+            if(contract) {
+                const ethersContract = contracts[contract];
+                const method = ethersContract[methodName].bind(ethersContract);
+                const tx = await method(...args, options); // || defaultOptions);
+                const pendingTx = {
+                    hash: tx.hash,
+                    contractName: contract,
+                    methodName,
+                    args,
+                    options
+                };
+                addPendingTransaction(pendingTx);
+            } else {
+                // TODO return web3.eth.sendTransaction(options);
+            }
+        }
+    }
+    const pendingTransactionCallbacks = [];
+    const pendingTransactions = [];
+    function addPendingTransaction(pendingTx) {
+        pendingTransactions.push(pendingTx);
+        for(let callback of pendingTransactionCallbacks) {
+            callback(pendingTx);
+        }
+        if(pendingTransactions.length == 1) {
+            checkPendingTransactions();
+        }
+    }
+
+    function removePendingTransaction(txHash) {
+        for(let pendingTx of pendingTransactions) {
+            if(pendingTx.hash == txHash) {
+                pendingTransactions.splice(i, 1);
+                // should not be duplicated : 
+            }
+        }
+        // TODO emit callback
+    }
+
+    async function checkPendingTransactionsOneByeOne(txHash) {
+        for(let pendingTx of pendingTransactions) {
+            const receipt = await eth.getTransactionReceipt(pendingTx.hash);
+            if(receipt) {
+                // console.log('MINED', receipt);
+                if(receipt.status == 1) {
+
+                } else {
+
+                }
+                if(receipt.confirmations > 12) { // TODO config
+                    // TODO notify final status
+                    removePendingTransaction(pendingTx.hash);
+                }
+            }
+        }
+    }
+
+    async function checkPendingTransactions() {
+
+        await checkPendingTransactionsOneByeOne();
+        
+        if(pendingTransactions.length > 0) {
+            setTimeout(checkPendingTransactions, 5000); // TODO config interval
+        }
+    }
+
+    function onPendingTx(callback, emitPrevious) {
+        if(emitPrevious) {
+            for(let pendingTx of pendingTransactions) {
+                callback(pendingTx);
+            }
+        }
+        pendingTransactionCallbacks.push(callback);
+    }
+
+    // function cancelPendingTxCallback(callback) {
+    //     // TODO
+    // }
+
+    return { load, unlock, subscribe, onPendingTx, tx };
 })();

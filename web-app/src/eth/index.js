@@ -4,7 +4,7 @@ if (typeof window !== 'undefined') {
     ethers = window.ethers;
 }
 
-const contracts = {};
+let contracts = {};
 let provider;
 let signer;
 
@@ -20,10 +20,12 @@ export default {
     fetchChainId: () => provider.getNetwork().then((net) => "" + net.chainId),
     fetchAccounts: () => signer ? provider.listAccounts() : [],
     setupContracts: (contractsInfo) => {
+        contracts = {};
         for (let key of Object.keys(contractsInfo)) {
             const info = contractsInfo[key];
             contracts[key] = new ethers.Contract(info.address, info.contractInfo.abi, signer || provider);
         }
+        return contracts;
     },
     getTransactionReceipt: async (txHash) => {
         let p = await provider.getTransactionReceipt(txHash);
