@@ -4,9 +4,10 @@
   "scripts": {
     "dev": "sapper dev --no-hot",
     "build": "sapper build",
-    "export": "sapper export _export",
+    "export": "sapper export && yarn walk",
+    "walk": "node scripts/walk.js __sapper__/export",
     "start": "node __sapper__/build",
-    "sirv": "sirv start _export",
+    "sirv": "sirv start __sapper__/export",
     "lint": "eslint '**/*.{js,jsx}' --quiet"
   },
   "devDependencies": {
@@ -19,6 +20,7 @@
     "mini-css-extract-plugin": "^0.6.0",
     "sapper": "^0.27.0",
     "sirv-cli": "^0.4.4",
+    "slash": "^3.0.0",
     "style-loader": "^0.23.1",
     "svelte": "^3.0.0",
     "svelte-loader": "2.13.3",
