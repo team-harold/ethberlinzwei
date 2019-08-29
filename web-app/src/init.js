@@ -1,5 +1,4 @@
 import wallet from './stores/wallet';
-import contractsInfo from './contractsInfo';
 import eth from './eth';
 
 function findGetParameter(parameterName) {
@@ -14,11 +13,34 @@ function findGetParameter(parameterName) {
 }
 
 export default async () => {
+    let contractsInfo;
+    let dev = false;
+
+    // TODO check env:
+    // console.log('ENV', JSON.stringify(process.env));
+    // if (process.env.NODE_ENV === 'production') {
+    //     contractsInfo = require('./contractsInfo.json');
+    // } else {
+    try {
+        contractsInfo = require('./dev_contractsInfo.json');
+        dev = true;
+    } catch (e) {
+        console.log('error getting dev_contractsInfo.json', e);
+        contractsInfo = require('./contractsInfo.json');
+    }
+    // }
+
+
+
+    // TODO default to dev if web page loaded from localhost or if using dev_contractsInfo.json
+
     let supportedChainIds = Object.keys(contractsInfo);
     let fallbackUrl;
-    if(contractsInfo['1']) {
+    if (dev) {
+        fallbackUrl = 'http://localhost:8545';
+    } else if (contractsInfo['1']) {
         fallbackUrl = 'https://mainnet.infura.io/v3/c985560c1dc04aed8f2c0300aa5f5efa';
-    } else if(contractsInfo['4']) {
+    } else if (contractsInfo['4']) {
         fallbackUrl = 'https://rinkeby.infura.io/v3/c985560c1dc04aed8f2c0300aa5f5efa';
     } else {
         fallbackUrl = 'http://localhost:8545';
@@ -27,8 +49,8 @@ export default async () => {
         fallbackUrl = findGetParameter('fallbackUrl') || fallbackUrl;
     }
 
-    await wallet.load({fallbackUrl, supportedChainIds}, ($wallet) => {
-        if($wallet && $wallet.chainId) {
+    await wallet.load({ fallbackUrl, supportedChainIds }, ($wallet) => {
+        if ($wallet && $wallet.chainId) {
             const chainId = $wallet.chainId;
             if (contractsInfo[chainId]) {
                 console.log('setting up contract for chainId', contractsInfo[chainId]);

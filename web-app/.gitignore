@@ -2,4 +2,4 @@ node_modules
 public/bundle.*
 __sapper__/
 _export/
-# src/contractsInfo.json
+src/dev_contractsInfo.json

@@ -7,17 +7,25 @@ if (typeof window !== 'undefined') {
 let contracts = {};
 let provider;
 let signer;
+let builtinProvider;
 
 export default {
-    _setup: (ethereumOrURL) => {
+    _setup: (ethereumOrURL, ethereum) => {
         if (typeof ethereumOrURL === 'string') {
             provider = new ethers.providers.JsonRpcProvider(ethereumOrURL);
+            if (ethereum) {
+                builtinProvider = new ethers.providers.Web3Provider(ethereum);
+            } else {
+                builtinProvider = provider;
+            }
         } else {
             provider = new ethers.providers.Web3Provider(ethereumOrURL);
+            builtinProvider = provider;
             signer = provider.getSigner();
         }
     },
     fetchChainId: () => provider.getNetwork().then((net) => "" + net.chainId),
+    fetchBuiltinChainId: () => builtinProvider.getNetwork().then((net) => "" + net.chainId),
     fetchAccounts: () => signer ? provider.listAccounts() : [],
     setupContracts: (contractsInfo) => {
         contracts = {};
@@ -52,8 +60,9 @@ export default {
     getPayIn: async (addr) => {
         return contracts.WelfareFund.getPayIn(addr);
     },
-    claimPayOut: () => {return {payoutAmount: 740};
-    },          
+    claimPayOut: () => {
+        return { payoutAmount: 740 };
+    },
     isJoined: async (addr) => {
         return contracts.WelfareFund.isJoined(addr);
         // status: 'dead' //paying, dead, null
