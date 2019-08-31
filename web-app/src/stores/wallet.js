@@ -38,6 +38,9 @@ export default (() => {
 
     function watch() {
         function checkAccounts(accounts) {
+            if ($wallet.status === 'Locked' || $wallet.status === 'Unlocking') {
+                return; // skip as Unlock / post-Unlocking will fetch the account
+            }
             // log.info('checking ' + accounts);
             if (accounts && accounts.length > 0) {
                 const account = accounts[0];
@@ -50,6 +53,7 @@ export default (() => {
                     //     eth._setup(ethereum);
                     // }
                     if ($wallet.status != 'WrongChain') { // TODO add Error ? Locked ?
+                        console.log('now READY');
                         _set({
                             address: account,
                             status: 'Ready',
@@ -240,6 +244,7 @@ export default (() => {
                 accounts = undefined;
             }
             if (accounts && accounts.length > 0) {
+                console.log('already READY');
                 _set({
                     address: accounts[0],
                     status: 'Ready'
@@ -311,9 +316,18 @@ export default (() => {
             status: 'Unlocking'
         });
         let accounts;
+        // try {
+        //     accounts = await eth.fetchAccounts();
+        // } catch (e) {
+        //     console.log('cannot get accounts', e);
+        //     accounts = [];
+        // }
+        // if (!accounts || accounts.length == 0) {
+        // console.log('no accounts');
         try {
             accounts = await window.ethereum.enable();
         } catch (e) {
+            console.log('refused to get accounts', e);
             // try {
             //     log.info('trying accounts...', e);
             //     accounts = await window.web3.eth.getAccounts();
@@ -322,8 +336,10 @@ export default (() => {
             accounts = [];
             // }
         }
+        // }
 
         if (accounts.length > 0) {
+            console.log('unlocked READY');
             _set({
                 address: accounts[0],
                 status: 'Ready'

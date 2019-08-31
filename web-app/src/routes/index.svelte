@@ -1,3 +1,6 @@
+<script>
+    import { goto } from '@sapper/app';
+</script>
 <svelte:head>
     <title>Transit Fund</title>
 </svelte:head>
@@ -19,10 +22,9 @@
     }
 </style>
 
-<a style="display:none" href="actions" />
 <header class="d-flex flex-column align-items-center">
     <img class="logo-img" alt="Transit" lass="logo-img" src="logo_invert.png">
-    <button on:click="{ () => {window.location.href=" actions"}}">JOIN Transit</button>
+    <button on:click="{ () => goto('pension') }"><a href="pension"></a>Join Transit</button>
 </header>
 
 <section class="container-fluid index-section" style="text-align: center">

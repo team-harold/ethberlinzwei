@@ -3,6 +3,7 @@ import wallet from './wallet';
 import log from '../util/log';
 
 const $data = {};
+let interval;
 export default derived(wallet, ($wallet, set) => {
     console.log('derived from', $wallet);
     function _set(obj) {
@@ -24,20 +25,23 @@ export default derived(wallet, ($wallet, set) => {
         });
     }
 
-    let interval;
     async function startListening() {
         if (!interval) {
             fetch();
             interval = setInterval(() => {
                 fetch();
             }, 5000); // TODO config interval
+            console.log('start listenning', interval);
         }
     }
 
     async function stopListening() {
+        console.log('stop listenning', interval);
         if (interval) {
+            console.log('stop listenning');
             clearInterval(interval);
         }
+        interval = undefined;
     }
 
     if ($wallet.status === 'Ready') {
@@ -48,6 +52,7 @@ export default derived(wallet, ($wallet, set) => {
         });
         startListening();
     } else {
+        console.log('not ready now');
         stopListening(); // TODO Should we stop listening ?
         _set({
             status: 'Unset',
