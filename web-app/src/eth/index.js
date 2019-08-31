@@ -39,32 +39,5 @@ export default {
         let p = await provider.getTransactionReceipt(txHash);
         return p;
     },
-    join: (joiningAge, retirementAge, monthlyPayIn) => {
-        console.log("joiningAge: ", joiningAge);
-        console.log("retirementAge: ", retirementAge);
-        console.log("monthlyPayIn: ", monthlyPayIn);
-        if (contracts.WelfareFund) {
-            console.log("submitting");
-            return contracts.WelfareFund.join(joiningAge, retirementAge, monthlyPayIn, { gasLimit: 3000000 });
-        } else {
-            throw ('no contract WelfareFund setup');
-        }
-    },
-    payIn: (value) => {
-        console.log('paying value: ', value);
-        return contracts.WelfareFund.payIn({ gasLimit: 3000000, value: value });
-    },
-    withdraw: () => {
-        return contracts.WelfareFund.claimPayOut();
-    },
-    getPayIn: async (addr) => {
-        return contracts.WelfareFund.getPayIn(addr);
-    },
-    claimPayOut: () => {
-        return { payoutAmount: 740 };
-    },
-    isJoined: async (addr) => {
-        return contracts.WelfareFund.isJoined(addr);
-        // status: 'dead' //paying, dead, null
-    },
+
 };

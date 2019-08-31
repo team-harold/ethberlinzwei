@@ -81,12 +81,12 @@
     <form id="harold-ages" class="d-flex flex-row justify-content-between py-3">
         <div class="d-flex flex-column mb-3 align-items-start">
             <h3 class="bd-highlight">Your age</h3>
-            <input type="text" class="harold-form" style="" bind:value={inputJoiningAge}>
+            <input type="text" class="harold-form" bind:value={inputJoiningAge}>
         </div>
 
         <div class="d-flex flex-column mb-3 align-items-start">
             <h3 class="bd-highlight">Retirement age</h3>
-            <input type="text" class="harold-form" style="{isValidRetirementAge}" bind:value={inputRetirementAge}>
+            <input type="text" class="harold-form" bind:value={inputRetirementAge}>
         </div>
     </form>
 

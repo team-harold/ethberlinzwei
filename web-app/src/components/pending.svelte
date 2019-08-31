@@ -1,9 +1,5 @@
 <script>
     import wallet from '../stores/wallet';
-    import eth from '../eth';
-    import annuity from '../math/annuity';
-    import Modal from './Modal.svelte';
-    import { beforeUpdate, afterUpdate } from 'svelte';
     export let message;
 </script>
 

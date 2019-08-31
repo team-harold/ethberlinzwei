@@ -1,26 +1,21 @@
 <script>
     import wallet from '../stores/wallet';
-    import eth from '../eth';
-    import annuity from '../math/annuity';
-    import Modal from './Modal.svelte';
-    import { onMount, beforeUpdate, afterUpdate } from 'svelte';
+    import pensionData from '../stores/userPensionData';
     export let status;
-
-    let payInData = []
-    onMount(async () => {
-        payInData = await eth.getPayIn($wallet.address) // TODO use contractsData store
-        console.log("pay in data: ", payInData)
-
-    })
-    $: paymentDue = payInData.amountDue ? payInData.amountDue : ''
-    $: amountPaid = payInData.amountPaid ? payInData.amountPaid : ''
-    $: timeRetire = payInData.timeRetire ? getDateString(payInData.timeRetire.toNumber() * 1000) : ''
-    $: timeDue = payInData.nextPaymentDueOn ? getDateString(payInData.nextPaymentDueOn.toNumber() * 1000) : ''
 
     function getDateString(time) {
         let d = new Date(time)
         return d.toDateString()
     }
+
+    function format(d) {
+        return d ? getDateString(d.toNumber() * 1000) : ''
+    }
+
+    // $: paymentDue = payInData.amountDue ? payInData.amountDue : ''
+    //     $: amountPaid = payInData.amountPaid ? payInData.amountPaid : ''
+    //     $: timeRetire = payInData.timeRetire ? getDateString(payInData.timeRetire.toNumber() * 1000) : ''
+    //     $: timeDue = payInData.nextPaymentDueOn ? getDateString(payInData.nextPaymentDueOn.toNumber() * 1000) : ''
 
 </script>
 
@@ -47,18 +42,18 @@
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-money-bill"></i>
         </span>
-        <h5>You next monthly payment is <span style="color: #ff2968">{paymentDue}</span> DAI </h5>
+        <h5>You next monthly payment is <span style="color: #ff2968">{$pensionData.paymentDue}</span> DAI </h5>
     </div>
 
     <div class="d-flex flex-row align-items-center my-1">
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-clock"></i>
         </span>
-        <h5>You have <span style="color: #ff2968">{timeDue}</span> before the deadline</h5>
+        <h5>Deadline is <span style="color: #ff2968">{format($pensionData.nextPaymentDueOn)}</span></h5>
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
-        <button on:click="{() => wallet.tx({value: paymentDue}, 'WelfareFund', 'payIn')}"> Make Payment </button>
+        <button on:click="{() => wallet.tx({value: $pensionData.paymentDue}, 'WelfareFund', 'payIn')}"> Make Payment </button>
     </div>
 
 </section>
@@ -66,8 +61,8 @@
 <footer>
     <div class="d-flex flex-column align-items-center my-3">
         <h1>💰</h1>
-        <h5> You have saved a total of <span style="color: #ff2968">{amountPaid}</span> DAI</h5>
-        <h5>Retiring on... <span style="color: #ff2968">{timeRetire}</span></h5>
+        <h5> You have saved a total of <span style="color: #ff2968">{$pensionData.amountPaid}</span> DAI</h5>
+        <h5>Retiring on... <span style="color: #ff2968">{format($pensionData.timeRetire)}</span></h5>
     </div>
 </footer>
 
@@ -76,7 +71,7 @@
 
     <div class="d-flex flex-column align-items-center my-3">
         <h1>🥳</h1>
-        <h5> You can withdraw <span style="color: #ff2968">{amountPaid}</span> DAI</h5>
+        <h5> You can withdraw <span style="color: #ff2968">{$pensionData.amountPaid}</span> DAI</h5>
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
