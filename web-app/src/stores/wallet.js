@@ -15,7 +15,7 @@ function reloadPage(reason, instant) {
     }
 }
 
-let $wallet = {};
+const $wallet = {};
 export default (() => {
     const { subscribe, set, update } = writable();
     let contracts;
@@ -23,7 +23,7 @@ export default (() => {
         for (let key of Object.keys(obj)) {
             $wallet[key] = obj[key];
         }
-        log.info(JSON.stringify($wallet, null, '  '));
+        log.info('WALLET', JSON.stringify($wallet, null, '  '));
         set($wallet);
     }
 
@@ -38,7 +38,7 @@ export default (() => {
 
     function watch() {
         function checkAccounts(accounts) {
-            log.info('checking ' + accounts);
+            // log.info('checking ' + accounts);
             if (accounts && accounts.length > 0) {
                 const account = accounts[0];
                 if ($wallet.address) {
@@ -73,7 +73,7 @@ export default (() => {
             }
         }
         function checkChain(newChainId) {
-            log.info('checking new chain ' + newChainId);
+            // log.info('checking new chain ' + newChainId);
             if ($wallet.chainId && newChainId != $wallet.chainId) {
                 // console.log('from ' + $wallet.chainId + ' to ' + newChainId);
                 reloadPage('networkChanged');
@@ -226,6 +226,10 @@ export default (() => {
         _set({ chainId });
 
         if (supportedChainIds.indexOf(chainId) >= 0) {
+            if (setup) {
+                contracts = setup($wallet);
+            }
+
             let accounts;
             try {
                 log.info('getting accounts..');
@@ -246,15 +250,16 @@ export default (() => {
         } else {
             log.info('wrong chain');
             eth._setup(fallbackUrl, ethereum);
+            if (setup) {
+                contracts = setup($wallet);
+            }
             _set({
                 status: 'WrongChain',
                 requireManualChainReload: isOpera,
                 readOnly: true
             });
         }
-        if (setup) {
-            contracts = setup($wallet);
-        }
+
         if (web3EnabledAndWorking) {
             watch();
         }
@@ -275,6 +280,29 @@ export default (() => {
         _retry = (isRetry) => _load({ fallbackUrl, supportedChainIds, isRetry }, setup);
         promise = _retry(false);
         return promise;
+    }
+
+    function call(options, contract, methodName, ...args) {
+        // cal with from ?
+
+        // const w = await ensureEnabled();
+        // if (!w || !w.address) {
+        //     throw new Error('Can\'t perform tx');
+        // }
+        if (typeof options === 'string') {
+            args.unshift(methodName);
+            methodName = contract;
+            contract = options;
+            options = undefined;
+        }
+
+        if (contract) {
+            const ethersContract = contracts[contract];
+            const method = ethersContract.functions[methodName].bind(ethersContract);
+            return method(...args, options || {}); // || defaultOptions);
+        } else {
+            console.error('TODO send raw call');
+        }
     }
 
     async function unlock() {
@@ -410,5 +438,5 @@ export default (() => {
     //     // TODO
     // }
 
-    return { load, retry, unlock, subscribe, onPendingTx, tx, reloadPage: () => reloadPage('requested', true) };
+    return { load, retry, unlock, subscribe, onPendingTx, tx, call, reloadPage: () => reloadPage('requested', true) };
 })();

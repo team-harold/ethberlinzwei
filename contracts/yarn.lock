@@ -6574,10 +6574,10 @@ rocketh-ethers@^0.0.2:
   resolved "https://registry.yarnpkg.com/rocketh-ethers/-/rocketh-ethers-0.0.2.tgz#85972d929be1fba370c081b495fe9f1362a4d637"
   integrity sha512-jn0HY53RnyfzEQyczdMxyr/89qaoOc6baQI6/0wVYLHvGZJQd9s2MlTr+n0wqFAGhxZ7SkIXs2PW3tRxBdt3wg==
 
-rocketh@^0.2.41:
-  version "0.2.41"
-  resolved "https://registry.yarnpkg.com/rocketh/-/rocketh-0.2.41.tgz#14f02e6b69e6a7917bcf3a12e4eddbae5cc06c44"
-  integrity sha512-h5hpUmeWHRnMpur1/SQPp5rRd9Rke4QKcL1LYcIYYtDuCwhIAT4FMSo6hXdgxK7SfZAtVayNSZag605nPMbERA==
+rocketh@^0.2.43:
+  version "0.2.43"
+  resolved "https://registry.yarnpkg.com/rocketh/-/rocketh-0.2.43.tgz#03c35f936f69afb54acf54a4cd7e10c4cfdda42b"
+  integrity sha512-qoOQBqhPq7TLgqVX3mNdWWbqnl5PTtS0Krk1z5CGQ/83tBYl20X9U6DtKS99AbH9h26XwOF9aCvg2vgvqzVLGw==
   dependencies:
     "@rauschma/stringio" "^1.4.0"
     bip39 "^2.5.0"
