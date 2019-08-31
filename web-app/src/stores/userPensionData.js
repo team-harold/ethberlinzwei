@@ -5,13 +5,18 @@ import log from '../util/log';
 const $data = {};
 let interval;
 export default derived(wallet, ($wallet, set) => {
-    console.log('derived from', $wallet);
     function _set(obj) {
+        let diff = 0;
         for (let key of Object.keys(obj)) {
-            $data[key] = obj[key];
+            if ($data[key] !== obj[key]) {
+                $data[key] = obj[key];
+                diff++;
+            }
         }
-        log.info('CONTRACT DATA', JSON.stringify($data, null, '  '));
-        set($data);
+        if (diff > 0) {
+            log.info('CONTRACT DATA', JSON.stringify($data, null, '  '));
+            set($data);
+        }
     }
 
     async function fetch() {

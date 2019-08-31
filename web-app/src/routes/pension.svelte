@@ -30,19 +30,30 @@
                 <Dead/>
             {/if}
         {/if}
+        {#if $transactions.status === 'Loading'}
+            <Modal>
+                <h4 slot="header">Checking Pending Transactions</h4>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                        role="progressbar" 
+                        aria-valuenow="100" 
+                        aria-valuemin="0" 
+                        aria-valuemax="100" 
+                        style="width: 100%; background-color:  #ff2968"></div>
+                </div>
+            </Modal>
+        {:else if $transactions.numUnConfirmed > 0}
+            <Modal>
+                <h4 slot="header">Transaction in Porgress</h4>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                        role="progressbar" 
+                        aria-valuenow="100" 
+                        aria-valuemin="0" 
+                        aria-valuemax="100" 
+                        style="width: 100%; background-color:  #ff2968"></div>
+                </div>
+            </Modal>
+        {/if}
     {/if}
-{/if}
-
-{#if $transactions.length > 0}
-	<Modal>
-		<h4 slot="header">Transaction in Porgress</h4>
-        <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                role="progressbar" 
-                aria-valuenow="100" 
-                aria-valuemin="0" 
-                aria-valuemax="100" 
-                style="width: 100%; background-color:  #ff2968"></div>
-        </div>
-	</Modal>
 {/if}

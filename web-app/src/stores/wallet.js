@@ -378,7 +378,7 @@ export default (() => {
             if (contract) {
                 const ethersContract = contracts[contract];
                 const method = ethersContract[methodName].bind(ethersContract);
-                const tx = await method(...args, options); // || defaultOptions);
+                const tx = await method(...args, options || {}); // || defaultOptions);
                 const pendingTx = {
                     hash: tx.hash,
                     contractName: contract,
@@ -386,73 +386,23 @@ export default (() => {
                     args,
                     options
                 };
-                addPendingTransaction(pendingTx);
+                emitTransaction(pendingTx, $wallet.chainId, $wallet.address);
             } else {
                 console.error('TODO send raw tx');
             }
         }
     }
-    const pendingTransactionCallbacks = [];
-    const pendingTransactions = [];
-    function addPendingTransaction(pendingTx) {
-        pendingTransactions.push(pendingTx);
-        for (let callback of pendingTransactionCallbacks) {
-            callback(pendingTx);
-        }
-        if (pendingTransactions.length == 1) {
-            checkPendingTransactions();
+
+    function emitTransaction(tx, chainId, address) {
+        for (let callback of transactionCallbacks) {
+            callback(tx, chainId, address);
         }
     }
 
-    function removePendingTransaction(txHash) {
-        for (let pendingTx of pendingTransactions) {
-            if (pendingTx.hash == txHash) {
-                pendingTransactions.splice(i, 1);
-                // should not be duplicated : 
-            }
-        }
-        // TODO emit callback
+    const transactionCallbacks = [];
+    function onTransactionBroadcasted(callback) {
+        transactionCallbacks.push(callback);
     }
 
-    async function checkPendingTransactionsOneByeOne(txHash) {
-        for (let pendingTx of pendingTransactions) {
-            const receipt = await eth.getTransactionReceipt(pendingTx.hash);
-            if (receipt) {
-                // console.log('MINED', receipt);
-                if (receipt.status == 1) {
-
-                } else {
-
-                }
-                if (receipt.confirmations > 12) { // TODO config
-                    // TODO notify final status
-                    removePendingTransaction(pendingTx.hash);
-                }
-            }
-        }
-    }
-
-    async function checkPendingTransactions() {
-
-        await checkPendingTransactionsOneByeOne();
-
-        if (pendingTransactions.length > 0) {
-            setTimeout(checkPendingTransactions, 5000); // TODO config interval
-        }
-    }
-
-    function onPendingTx(callback, emitPrevious) {
-        if (emitPrevious) {
-            for (let pendingTx of pendingTransactions) {
-                callback(pendingTx);
-            }
-        }
-        pendingTransactionCallbacks.push(callback);
-    }
-
-    // function cancelPendingTxCallback(callback) {
-    //     // TODO
-    // }
-
-    return { load, retry, unlock, subscribe, onPendingTx, tx, call, reloadPage: () => reloadPage('requested', true) };
+    return { load, retry, unlock, subscribe, onTransactionBroadcasted, tx, call, reloadPage: () => reloadPage('requested', true) };
 })();

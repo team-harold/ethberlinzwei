@@ -24,7 +24,8 @@
 
 <header class="d-flex flex-column align-items-center">
     <img class="logo-img" alt="Transit" lass="logo-img" src="logo_invert.png">
-    <button on:click="{ () => goto('pension') }"><a href="pension"></a>Join Transit</button>
+    <button on:click="{ () => goto('pension') }"><a style="display: none;" href="pension">nothing</a>Join
+        Transit</button>
 </header>
 
 <section class="container-fluid index-section" style="text-align: center">

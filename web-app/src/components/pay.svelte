@@ -3,38 +3,19 @@
     import eth from '../eth';
     import annuity from '../math/annuity';
     import Modal from './Modal.svelte';
-    import {onMount, beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
+    import { onMount, beforeUpdate, afterUpdate } from 'svelte';
     export let status;
 
-    const dispatch = createEventDispatcher();
-
     let payInData = []
-    onMount( async() => {
-        payInData = await eth.getPayIn($wallet.address)
+    onMount(async () => {
+        payInData = await eth.getPayIn($wallet.address) // TODO use contractsData store
         console.log("pay in data: ", payInData)
 
     })
-    $:paymentDue = payInData.amountDue ? payInData.amountDue: ''
-    $:amountPaid = payInData.amountPaid ? payInData.amountPaid : ''
-    $:timeRetire = payInData.timeRetire ? getDateString(payInData.timeRetire.toNumber()*1000) : ''
-    $:timeDue = payInData.nextPaymentDueOn ? getDateString(payInData.nextPaymentDueOn.toNumber()*1000) : ''
-    async function payIn() {
-        try {
-            console.log("paymentDue: ", paymentDue)
-            let txObj = await eth.payIn(payInData.amountDue)
-            console.log('txObj: ', txObj)
-            localStorage.setItem($wallet.address, txObj.hash)
-            dispatch('txPending', {msg: 'Confirming your new payment! 😊'})
-        } catch (e) { console.log(e) }
-    }
-
-    async function withdraw() {
-        try {
-            let txObj = await eth.withdraw()
-            localStorage.setItem($wallet.address, txObj.hash)
-            dispatch('txPending', {msg: 'Sending you some 💵!'})
-        } catch (e) { console.log(e) }
-    }
+    $: paymentDue = payInData.amountDue ? payInData.amountDue : ''
+    $: amountPaid = payInData.amountPaid ? payInData.amountPaid : ''
+    $: timeRetire = payInData.timeRetire ? getDateString(payInData.timeRetire.toNumber() * 1000) : ''
+    $: timeDue = payInData.nextPaymentDueOn ? getDateString(payInData.nextPaymentDueOn.toNumber() * 1000) : ''
 
     function getDateString(time) {
         let d = new Date(time)
@@ -44,17 +25,15 @@
 </script>
 
 <style>
+    h5 {
+        color: #f7f7fa;
+        font-size: 18px;
+        margin: 0
+    }
 
-h5 {
-    color: #f7f7fa;
-    font-size: 18px;
-    margin: 0
-}
-
-#payin-btn {
-    border-bottom: 1px solid #f2f2fa;
-}
-
+    #payin-btn {
+        border-bottom: 1px solid #f2f2fa;
+    }
 </style>
 
 <header>
@@ -101,7 +80,7 @@ h5 {
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
-        <button on:click="{withdraw}"> Withdraw</button>
+        <button on:click="{() => wallet.tx('WelfareFund', 'claimPayout')}"> Withdraw</button>
     </div>
 
 </section>
