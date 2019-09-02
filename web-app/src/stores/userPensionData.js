@@ -47,9 +47,9 @@ export default derived(wallet, ($wallet, set) => {
     }
 
     async function stopListening() {
-        console.log('stop listenning', interval);
+        // console.log('stop listenning', interval);
         if (interval) {
-            console.log('stop listenning');
+            // console.log('stop listenning');
             clearInterval(interval);
         }
         interval = undefined;
@@ -63,12 +63,8 @@ export default derived(wallet, ($wallet, set) => {
         });
         startListening();
     } else {
-        console.log('not ready now');
+        // console.log('not ready now');
         stopListening(); // TODO Should we stop listening ?
-        _set({
-            status: 'Unset',
-            userStatus: undefined,
-            joined: undefined,
-        });
+        _set({ status: 'Unset' });
     }
 });

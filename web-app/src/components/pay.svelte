@@ -49,7 +49,7 @@
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-clock"></i>
         </span>
-        <h5>Deadline is <span style="color: #ff2968">{format($pensionData.nextPaymentDueOn)}</span></h5>
+        <h5>Next Deadline is <span style="color: #ff2968">{format($pensionData.nextPaymentDueOn)}</span></h5>
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">

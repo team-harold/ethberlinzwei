@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev --no-hot",
+    "sapper": "sapper",
     "build": "sapper build",
     "export": "sapper export _export",
     "start": "node __sapper__/build",
