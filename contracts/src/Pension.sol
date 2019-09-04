@@ -102,64 +102,33 @@ contract Pension is Annuity {
         _persons[msg.sender].totalPaidOut += diff;
     }
 
-    function timeWhenPenalty(address who) external view returns(uint256) {
-        uint256 startTime = _persons[who].startTime;
-        if(startTime == 0) {
-            return 0;
-        }
-        return startTime + (_persons[who].contribution / _persons[who].payInPerMonth) * NUM_SECONDS_IN_A_MONTH + 2; // TODO fix
+    function getPersonData(address who) external view returns (
+        uint16 joiningAge,
+        uint120 payInPerMonth,
+        uint120 payOutPerMonth,
+        uint64 retirementTime,
+        uint64 startTime,
+        uint128 contribution,
+        uint128 totalPaidOut
+    ) {
+        joiningAge = _persons[who].joiningAge;
+        payInPerMonth = _persons[who].payInPerMonth;
+        payOutPerMonth = _persons[who].payOutPerMonth;
+        retirementTime = _persons[who].retirementTime;
+        startTime = _persons[who].startTime;
+        contribution = _persons[who].contribution;
+        totalPaidOut = _persons[who].totalPaidOut;
     }
 
-    function getPayIn(address who) external view returns (
-        bool joined,
-        uint256 nextPaymentDueOn,
-        uint256 amountDue,
-        uint256 amountPaid,
-        uint256 timeRetire
-    ){
-        uint256 startTime = _persons[who].startTime;
-        joined = startTime != 0;
-        if(joined) {
-            nextPaymentDueOn = startTime + (_persons[who].contribution / _persons[who].payInPerMonth) * NUM_SECONDS_IN_A_MONTH + 2; // TODO fix
-        }
-        amountDue = _persons[who].payInPerMonth;
-        amountPaid = _persons[who].contribution;
-        timeRetire = _persons[who].retirementTime;
-    }
-
-    function getPayOutPerMonth(address who) external view returns(uint256){
-        return _persons[who].payOutPerMonth;
-    }
-
-    function getPayInPerMonth(address who) external view returns(uint256){
-        return _persons[who].payInPerMonth;
-    }
-
-    enum Status {retired, paying, dead}
-    function isJoined(address who) external view returns (
-        bool joined,
-        Status status
-    ){
-        uint16 currentAge = uint16(_persons[who].joiningAge +
-            (_getTime() - _persons[who].startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
-        bool isDead = !_eligibilityOracle.isEligible(who, currentAge); // TODO eligibility, not death
-        if (isDead) status = Status.dead;
-        else {
-            bool isRetired = _getTime() > _persons[who].retirementTime;
-            if (isRetired) status = Status.retired;
-            else status = Status.paying;
-        }
-        joined = _persons[who].joiningAge > 0;
-    }
-
+    ////////////// DEBUG //////////////////////////////////////
 
     int256 _timeDelta;
     function _getTime() internal view returns(uint256) {
         return uint256(int256(block.timestamp) + _timeDelta);
     }
 
-    function getTime() external view returns(uint256) {
-        return _getTime();
+    function getTimeDelta() external view returns(int256) {
+        return _timeDelta;
     }
 
     function debug_addTimeDelta(int256 delta) external {

@@ -60,28 +60,23 @@ tap.test('Pension', async (t) => {
         const payInBN = new BN(payIn);
         console.log({ payIn, payInS: payInBN.toString('hex') });
 
-        let cTime = await call(contract, 'getTime');
-        let payOutPerMonth = await call(contract, 'getPayOutPerMonth', user1);
-        let payInPerMonths = await call(contract, 'getPayInPerMonth', user1);
-        console.log({ cTime, payOutPerMonth, payInPerMonths });
-
-        let payInData;
-        payInData = await call(contract, 'getPayIn', user1);
-        console.log({ payInData });
+        let personData;
+        personData = await call(contract, 'getPersonData', user1);
+        console.log({ personData });
 
         trx = await tx({ from: user1, gas, value: '0x' + payInBN.toString(16) }, contract, 'payIn');
         await trx.wait();
         await wait(0.5);
 
-        payInData = await call(contract, 'getPayIn', user1);
-        console.log({ payInData });
+        personData = await call(contract, 'getPersonData', user1);
+        console.log({ personData });
 
         trx = await tx({ from: deployer, gas }, contract, 'debug_addTimeDelta', numSeconds);
         await trx.wait();
         await wait(0.5);
 
-        payInData = await call(contract, 'getPayIn', user1);
-        console.log({ payInData });
+        personData = await call(contract, 'getPersonData', user1);
+        console.log({ personData });
 
         const balanceBefore = await getBalance(user1);
 
@@ -104,28 +99,23 @@ tap.test('Pension', async (t) => {
         const payInBN = new BN(payIn);
         console.log({ payIn, payInS: payInBN.toString('hex') });
 
-        let cTime = await call(contract, 'getTime');
-        let payOutPerMonth = await call(contract, 'getPayOutPerMonth', user1);
-        let payInPerMonths = await call(contract, 'getPayInPerMonth', user1);
-        console.log({ cTime, payOutPerMonth, payInPerMonths });
-
-        let payInData;
-        payInData = await call(contract, 'getPayIn', user1);
-        console.log({ payInData });
+        let personData;
+        personData = await call(contract, 'getPersonData', user1);
+        console.log({ personData });
 
         trx = await tx({ from: user1, gas, value: '0x' + payInBN.toString(16) }, contract, 'payIn');
         await trx.wait();
         await wait(0.5);
 
-        payInData = await call(contract, 'getPayIn', user1);
-        console.log({ payInData });
+        personData = await call(contract, 'getPersonData', user1);
+        console.log({ personData });
 
         // trx = await tx({ from: deployer, gas }, contract, 'debug_addTimeDelta', numSeconds);
         // await trx.wait();
         // await wait(0.5);
 
-        payInData = await call(contract, 'getPayIn', user1);
-        console.log({ payInData });
+        personData = await call(contract, 'getPersonData', user1);
+        console.log({ personData });
 
         const balanceBefore = await getBalance(user1);
 

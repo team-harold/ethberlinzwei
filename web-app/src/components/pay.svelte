@@ -1,6 +1,7 @@
 <script>
     import wallet from '../stores/wallet';
-    import pensionData from '../stores/userPensionData';
+    import userPensionData from '../stores/userPensionData';
+    import { everySecond } from '../stores/time';
     export let status;
 
     function getDateString(time) {
@@ -12,11 +13,23 @@
         return d ? getDateString(d.toNumber() * 1000) : ''
     }
 
-    // $: paymentDue = payInData.amountDue ? payInData.amountDue : ''
-    //     $: amountPaid = payInData.amountPaid ? payInData.amountPaid : ''
-    //     $: timeRetire = payInData.timeRetire ? getDateString(payInData.timeRetire.toNumber() * 1000) : ''
-    //     $: timeDue = payInData.nextPaymentDueOn ? getDateString(payInData.nextPaymentDueOn.toNumber() * 1000) : ''
+    $: timestampBN = window.ethers.utils.bigNumberify($everySecond ? $everySecond : 0);
+    $: retirementTime = $userPensionData.retirementTime ? $userPensionData.retirementTime : window.ethers.utils.bigNumberify(0);
+    $: payingIn = retirementTime.gt(timestampBN);
+    $: retired = retirementTime.lte(timestampBN);
 
+
+    let deadline;
+    $: {
+        let minTime = timestampBN;
+        if(minTime.gt(retirementTime)) {
+            minTime = retirementTime;
+        }
+        let expectedContribution = minTime.sub($userPensionData.startTime).mul($userPensionData.payInPerMonth).div(window.ethers.utils.bigNumberify(2629746));
+        let diff = expectedContribution.sub($userPensionData.contribution);
+        deadline = retirementTime;
+    }
+    
 </script>
 
 <style>
@@ -42,18 +55,18 @@
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-money-bill"></i>
         </span>
-        <h5>You next monthly payment is <span style="color: #ff2968">{$pensionData.paymentDue}</span> DAI </h5>
+        <h5>You next monthly payment is <span style="color: #ff2968">{$userPensionData.payInPerMonth}</span> DAI </h5>
     </div>
 
     <div class="d-flex flex-row align-items-center my-1">
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-clock"></i>
         </span>
-        <h5>Next Deadline is <span style="color: #ff2968">{format($pensionData.nextPaymentDueOn)}</span></h5>
+        <h5>Next Deadline is <span style="color: #ff2968">{format(deadline)}</span></h5>
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
-        <button on:click="{() => wallet.tx({value: $pensionData.paymentDue}, 'Pension', 'payIn')}"> Make Payment </button>
+        <button on:click="{() => wallet.tx({value: $userPensionData.payInPerMonth}, 'Pension', 'payIn')}"> Make Payment </button>
     </div>
 
 </section>
@@ -61,8 +74,8 @@
 <footer>
     <div class="d-flex flex-column align-items-center my-3">
         <h1>💰</h1>
-        <h5> You have saved a total of <span style="color: #ff2968">{$pensionData.amountPaid}</span> DAI</h5>
-        <h5>Retiring on... <span style="color: #ff2968">{format($pensionData.timeRetire)}</span></h5>
+        <h5> You have saved a total of <span style="color: #ff2968">{$userPensionData.contribution}</span> DAI</h5>
+        <h5>Retiring on... <span style="color: #ff2968">{format($userPensionData.retirementTime)}</span></h5>
     </div>
 </footer>
 
@@ -71,7 +84,7 @@
 
     <div class="d-flex flex-column align-items-center my-3">
         <h1>🥳</h1>
-        <h5> You can withdraw <span style="color: #ff2968">{$pensionData.amountPaid}</span> DAI</h5>
+        <h5> You can withdraw <span style="color: #ff2968">{$userPensionData.payOutPerMonth}</span> DAI</h5>
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">

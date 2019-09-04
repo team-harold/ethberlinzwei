@@ -3,6 +3,7 @@
     import wallet from '../stores/wallet';
     import userPensionData from '../stores/userPensionData';
     import transactions from '../stores/transactions';
+    import { everySecond } from '../stores/time';
 
     // Components
     import Create from '../components/create.svelte';
@@ -10,6 +11,15 @@
     import Dead from '../components/dead.svelte';
     import Pending from '../components/pending.svelte';
     import Modal from '../components/Modal.svelte';
+
+    $: timestampBN = window.ethers.utils.bigNumberify($everySecond ? $everySecond : 0);
+    $: payingIn = $userPensionData.retirementTime && $userPensionData.retirementTime.gt(timestampBN);
+    $: retired = $userPensionData.retirementTime && $userPensionData.retirementTime.lte(timestampBN);
+
+    // $: {
+    //     console.log($userPensionData.retirementTime ? $userPensionData.retirementTime.toString(10) : 0);
+    //     console.log(timestampBN.toString(10));
+    // }
 
 </script>
 
@@ -19,15 +29,15 @@
     {#if $userPensionData.status !== 'Loaded'}
     <Pending message="Getting your account info!"/>
     {:else}
-        {#if !$userPensionData.joined}
+        {#if $userPensionData.joiningAge == 0}
             <Create />
         {:else}
-            {#if $userPensionData.stage == "paying"}
+            {#if $userPensionData.retirementTime == 0 } <!-- TODO use eligibility oracle -->
+                <Dead/> <!-- TODO ineligible not dead-->
+            {:else if payingIn}
                 <Pay status={"paying"} />
-            {:else if $userPensionData.stage == "retired"}
+            {:else if retired}
                 <Pay status={"retired"} />
-            {:else if $userPensionData.stage == "dead"}
-                <Dead/>
             {/if}
         {/if}
         {#if $transactions.status === 'Loading'}

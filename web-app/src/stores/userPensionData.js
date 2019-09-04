@@ -22,17 +22,17 @@ export default derived(wallet, ($wallet, set) => {
     async function fetch() {
         const stages = ['retired', 'paying', 'dead'];
         // TODO fetch on specific block (BlockBeat)
-        const isJoined = await wallet.call('Pension', 'isJoined', $wallet.address);
-        const getPayIn = await wallet.call('Pension', 'getPayIn', $wallet.address);
+        const personData = await wallet.call('Pension', 'getPersonData', $wallet.address);
         _set({
             status: 'Loaded',
             // TODO block,
-            joined: isJoined[0],
-            stage: stages[isJoined[1]],
-            paymentDue: getPayIn.amountDue,
-            amountPaid: getPayIn.amountPaid,
-            timeRetire: getPayIn.timeRetire,
-            nextPaymentDueOn: getPayIn.nextPaymentDueOn,
+            joiningAge: personData.joiningAge,
+            payInPerMonth: personData.payInPerMonth,
+            payOutPerMonth: personData.payOutPerMonth,
+            retirementTime: personData.retirementTime,
+            startTime: personData.startTime,
+            contribution: personData.contribution,
+            totalPaidOut: personData.totalPaidOut,
         });
     }
 
@@ -58,8 +58,6 @@ export default derived(wallet, ($wallet, set) => {
     if ($wallet.status === 'Ready') {
         _set({
             status: 'Loading', // TODO only if no data already available ?
-            userStatus: undefined,
-            joined: undefined,
         });
         startListening();
     } else {
