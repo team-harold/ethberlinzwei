@@ -65,4 +65,4 @@ export default derived(wallet, ($wallet, set) => {
         stopListening(); // TODO Should we stop listening ?
         _set({ status: 'Unset' });
     }
-});
+}, $data);

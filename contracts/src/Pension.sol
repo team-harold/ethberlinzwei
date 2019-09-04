@@ -67,18 +67,19 @@ contract Pension is Annuity {
         uint256 startTime = _persons[msg.sender].startTime;
         uint256 payInPerMonth = _persons[msg.sender].payInPerMonth;
         uint256 currentContribution = _persons[msg.sender].contribution;
-        // TODO :  reenable : require(msg.value <= ((retirementTime - startTime) * payInPerMonth / NUM_SECONDS_IN_A_MONTH) - currentContribution, "over pay"); // TODO refund ?
+        // uint256 totalToPay = ((retirementTime - startTime) * payInPerMonth) / NUM_SECONDS_IN_A_MONTH;
+        // TODO :  reenable : require(msg.value <= totalToPay - currentContribution, "over pay"); // TODO refund ?
 
-        uint256 minTime = _getTime();
-        if(minTime > retirementTime) {
-            minTime = retirementTime;
-        }
-        uint256 expectedContribution = ((minTime - _persons[msg.sender].startTime) * payInPerMonth) / NUM_SECONDS_IN_A_MONTH;
-        uint256 diff = expectedContribution - currentContribution;
-        uint256 penalty = 0;
-        if(diff / payInPerMonth > 2) {
-            penalty = ((diff / payInPerMonth) / 2) * 1; // TODO
-        }
+        // uint256 minTime = _getTime();
+        // if(minTime > retirementTime) {
+        //     minTime = retirementTime;
+        // }
+        // uint256 expectedContribution = ((minTime - _persons[msg.sender].startTime) * payInPerMonth) / NUM_SECONDS_IN_A_MONTH;
+        // uint256 diff = expectedContribution - currentContribution;
+        // uint256 penalty = 0;
+        // if(diff / payInPerMonth > 2) {
+        //     penalty = ((diff / payInPerMonth) / 2) * 1; // TODO
+        // }
         _persons[msg.sender].contribution = uint120(currentContribution + msg.value);
     }
 
@@ -88,16 +89,22 @@ contract Pension is Annuity {
 
         uint256 startTime = _persons[msg.sender].startTime;
         uint256 currentContribution = _persons[msg.sender].contribution;
-        require(currentContribution >= ((retirementTime - startTime) * _persons[msg.sender].payInPerMonth) / NUM_SECONDS_IN_A_MONTH, "did not pay all");
+        uint256 totalToPay = ((retirementTime - startTime) * _persons[msg.sender].payInPerMonth) / NUM_SECONDS_IN_A_MONTH;
+        require(
+            currentContribution >= totalToPay,
+            "did not pay all"
+        );
 
         uint256 joiningAge = _persons[msg.sender].joiningAge;
-        
+
         uint16 currentAge = uint16(joiningAge + (_getTime() - startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
         require(_eligibilityOracle.isEligible(msg.sender, currentAge), "not eligible");
+
         uint256 totalPaidOut = _persons[msg.sender].totalPaidOut;
         uint128 payOutPerMonth = _persons[msg.sender].payOutPerMonth;
-        uint256 toPay = ((_getTime() - retirementTime) * payOutPerMonth) / NUM_SECONDS_IN_A_MONTH;
-        uint120 diff = uint120(toPay - totalPaidOut);
+        uint256 toPayOut = ((_getTime() - retirementTime) * payOutPerMonth) / NUM_SECONDS_IN_A_MONTH;
+        uint120 diff = uint120(toPayOut - totalPaidOut);
+
         msg.sender.transfer(diff);
         _persons[msg.sender].totalPaidOut += diff;
     }

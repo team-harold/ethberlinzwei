@@ -53,7 +53,7 @@ export default (() => {
                     //     eth._setup(ethereum);
                     // }
                     if ($wallet.status != 'WrongChain') { // TODO add Error ? Locked ?
-                        console.log('now READY');
+                        log.info('now READY');
                         _set({
                             address: account,
                             status: 'Ready',
@@ -79,7 +79,7 @@ export default (() => {
         function checkChain(newChainId) {
             // log.info('checking new chain ' + newChainId);
             if ($wallet.chainId && newChainId != $wallet.chainId) {
-                // console.log('from ' + $wallet.chainId + ' to ' + newChainId);
+                // log.info('from ' + $wallet.chainId + ' to ' + newChainId);
                 reloadPage('networkChanged');
             }
         }
@@ -143,7 +143,7 @@ export default (() => {
         let opera_enabled_before = false;
         if (isOpera) {
             opera_enabled_before = localStorage.getItem('opera_wallet_enabled');
-            console.log('load', { opera_enabled_before });
+            log.info('load', { opera_enabled_before });
         }
 
         let web3EnabledAndWorking = false;
@@ -163,7 +163,7 @@ export default (() => {
             try {
                 chainId = await eth.fetchChainId();
             } catch (e) {
-
+                log.error('fallback : error fetching chainId', e);
             }
             if (chainId) {
                 _set({
@@ -183,13 +183,13 @@ export default (() => {
             }
             return $wallet;
         }
-        log.info('web3 is there...');
-        log.info('checking chainId...');
+        // log.info('web3 is there...');
+        // log.info('checking chainId...');
         let chainId;
         try {
             chainId = await eth.fetchChainId();
         } catch (e) {
-            console.error(e);
+            log.error('builtin wallet : error fetching chainId', e);
             eth._setup(fallbackUrl, ethereum);
             if (isOpera) {
                 log.info('Opera web3 quircks');
@@ -209,7 +209,6 @@ export default (() => {
                 });
                 // }
             } else {
-                log.error('failed to get chainId', e);
                 _set({
                     status: 'Error',
                     error: {
@@ -219,13 +218,13 @@ export default (() => {
                     readOnly: true
                 });
             }
-            console.log('failed to get chain Id');
+            log.info('failed to get chain Id');
             return $wallet;
         }
 
         if (isOpera && !opera_enabled_before) {
             localStorage.setItem('opera_wallet_enabled', true);
-            console.log('opera enabled saved');
+            log.info('opera enabled saved');
         }
         _set({ chainId });
 
@@ -244,7 +243,7 @@ export default (() => {
                 accounts = undefined;
             }
             if (accounts && accounts.length > 0) {
-                console.log('already READY');
+                log.info('already READY');
                 _set({
                     address: accounts[0],
                     status: 'Ready'
@@ -268,7 +267,6 @@ export default (() => {
         if (web3EnabledAndWorking) {
             watch();
         }
-        // console.log('$wallet', $wallet);
         return $wallet;
     }
 
@@ -306,7 +304,7 @@ export default (() => {
             const method = ethersContract.functions[methodName].bind(ethersContract);
             return method(...args, options || {}); // || defaultOptions);
         } else {
-            console.error('TODO send raw call');
+            log.error('TODO send raw call');
         }
     }
 
@@ -319,15 +317,15 @@ export default (() => {
         // try {
         //     accounts = await eth.fetchAccounts();
         // } catch (e) {
-        //     console.log('cannot get accounts', e);
+        //     log.info('cannot get accounts', e);
         //     accounts = [];
         // }
         // if (!accounts || accounts.length == 0) {
-        // console.log('no accounts');
+        // log.info('no accounts');
         try {
             accounts = await window.ethereum.enable();
         } catch (e) {
-            console.log('refused to get accounts', e);
+            log.info('refused to get accounts', e);
             // try {
             //     log.info('trying accounts...', e);
             //     accounts = await window.web3.eth.getAccounts();
@@ -339,7 +337,7 @@ export default (() => {
         // }
 
         if (accounts.length > 0) {
-            console.log('unlocked READY');
+            log.info('unlocked READY');
             _set({
                 address: accounts[0],
                 status: 'Ready'
@@ -373,7 +371,7 @@ export default (() => {
             options = undefined;
         }
         if (options && options.from && options.from.length > 42) {
-            console.error('TODO : privateKey based tx');
+            log.error('TODO : privateKey based tx');
         } else {
             if (contract) {
                 const ethersContract = contracts[contract];
@@ -388,7 +386,7 @@ export default (() => {
                 };
                 emitTransaction(pendingTx, $wallet.chainId, $wallet.address);
             } else {
-                console.error('TODO send raw tx');
+                log.error('TODO send raw tx');
             }
         }
     }

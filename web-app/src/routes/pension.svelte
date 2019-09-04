@@ -12,7 +12,7 @@
     import Pending from '../components/pending.svelte';
     import Modal from '../components/Modal.svelte';
 
-    $: timestampBN = window.ethers.utils.bigNumberify($everySecond ? $everySecond : 0);
+    $: timestampBN = process.browser ? window.ethers.utils.bigNumberify($everySecond ? $everySecond : 0) : 0;
     $: payingIn = $userPensionData.retirementTime && $userPensionData.retirementTime.gt(timestampBN);
     $: retired = $userPensionData.retirementTime && $userPensionData.retirementTime.lte(timestampBN);
 

@@ -13,22 +13,23 @@
         return d ? getDateString(d.toNumber() * 1000) : ''
     }
 
-    $: timestampBN = window.ethers.utils.bigNumberify($everySecond ? $everySecond : 0);
-    $: retirementTime = $userPensionData.retirementTime ? $userPensionData.retirementTime : window.ethers.utils.bigNumberify(0);
+    function bn(n) {
+        return window.ethers.utils.bigNumberify(n);
+    }
+
+    $: timestampBN = bn($everySecond);
+    $: retirementTime = $userPensionData.retirementTime ? $userPensionData.retirementTime : bn(0);
     $: payingIn = retirementTime.gt(timestampBN);
     $: retired = retirementTime.lte(timestampBN);
 
-
-    let deadline;
-    $: {
-        let minTime = timestampBN;
-        if(minTime.gt(retirementTime)) {
-            minTime = retirementTime;
-        }
-        let expectedContribution = minTime.sub($userPensionData.startTime).mul($userPensionData.payInPerMonth).div(window.ethers.utils.bigNumberify(2629746));
-        let diff = expectedContribution.sub($userPensionData.contribution);
-        deadline = retirementTime;
-    }
+    $: deadline = 
+        $userPensionData.contribution ? 
+            $userPensionData.contribution
+            .div($userPensionData.payInPerMonth)
+            .add(bn(1))
+            .mul(bn(2629746))
+            .add($userPensionData.startTime) :
+        0;
     
 </script>
 
@@ -62,7 +63,7 @@
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-clock"></i>
         </span>
-        <h5>Next Deadline is <span style="color: #ff2968">{format(deadline)}</span></h5>
+        <h5>Your Deadline is <span style="color: #ff2968">{format(deadline)}</span></h5>
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
