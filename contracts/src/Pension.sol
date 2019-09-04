@@ -1,10 +1,9 @@
 pragma solidity 0.5.11;
 
 import "./Interfaces/EligibilityOracle.sol";
-import "./Interfaces/DeathOracle.sol";
 import "./Annuity.sol";
 
-contract WelfareFund is Annuity {
+contract Pension is Annuity {
 
     uint256 constant NUM_SECONDS_IN_A_YEAR = 31556952;
     uint256 constant NUM_SECONDS_IN_A_MONTH = 2629746; //NUM_SECONDS_IN_A_YEAR / 12; // 2629746;
@@ -22,16 +21,13 @@ contract WelfareFund is Annuity {
 
     mapping(address => Person) _persons;
     EligibilityOracle _eligibilityOracle;
-    DeathOracle _deathOracle;
 
     constructor(
         uint256[] memory lifeTable,
         uint256[] memory interestBasedTable,
-        EligibilityOracle eligibilityOracle,
-        DeathOracle deathOracle
+        EligibilityOracle eligibilityOracle
     ) public Annuity(lifeTable, interestBasedTable) {
         _eligibilityOracle = eligibilityOracle;
-        _deathOracle = deathOracle;
     }
 
     bool _init;
@@ -144,7 +140,9 @@ contract WelfareFund is Annuity {
         bool joined,
         Status status
     ){
-        bool isDead = _deathOracle.isDead(who);
+        uint16 currentAge = uint16(_persons[who].joiningAge +
+            (_getTime() - _persons[who].startTime) / NUM_SECONDS_IN_A_YEAR); // TODO check overflow ?
+        bool isDead = !_eligibilityOracle.isEligible(who, currentAge); // TODO eligibility, not death
         if (isDead) status = Status.dead;
         else {
             bool isRetired = _getTime() > _persons[who].retirementTime;

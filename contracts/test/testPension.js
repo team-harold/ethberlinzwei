@@ -20,11 +20,11 @@ const {
     call,
 } = rockethUtil;
 
-tap.test('WelfareFund', async (t) => {
+tap.test('Pension', async (t) => {
     let contract;
     t.beforeEach(async () => {
         await rocketh.runStages();
-        contract = getDeployedContract('WelfareFund');
+        contract = getDeployedContract('Pension');
     });
 
     t.test('can join', async (t) => {

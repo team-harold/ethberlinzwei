@@ -5,15 +5,14 @@ const lifeTable = require('../../web-app/src/math/germanLifeTable1994');
 module.exports = async ({ chainId, accounts, initialRun, namedAccounts, registerDeployment }) => {
     const deployer = accounts[0];
     const gas = 3000000;
-    const contractName = 'WelfareFund';
+    const contractName = 'Pension';
 
     const eligibilityOracle = getDeployedContract('AlwaysEligibleUnlessDead');
-    const deathOracle = getDeployedContract('Ankou');
     const deployResult = await deploy(
         contractName,
         { from: deployer, gas },
         contractName,
-        lifeTable, interestRate5PCnominators, eligibilityOracle.address, deathOracle.address
+        lifeTable, interestRate5PCnominators, eligibilityOracle.address
     );
 
     if (initialRun) {

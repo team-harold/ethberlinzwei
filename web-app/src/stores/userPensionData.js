@@ -22,8 +22,8 @@ export default derived(wallet, ($wallet, set) => {
     async function fetch() {
         const stages = ['retired', 'paying', 'dead'];
         // TODO fetch on specific block (BlockBeat)
-        const isJoined = await wallet.call('WelfareFund', 'isJoined', $wallet.address);
-        const getPayIn = await wallet.call('WelfareFund', 'getPayIn', $wallet.address);
+        const isJoined = await wallet.call('Pension', 'isJoined', $wallet.address);
+        const getPayIn = await wallet.call('Pension', 'getPayIn', $wallet.address);
         _set({
             status: 'Loaded',
             // TODO block,

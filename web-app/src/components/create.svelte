@@ -122,6 +122,6 @@
 <footer class="text-center mt-5">
     <!-- join: async (joiningAge, retirementAge, monthlyPayIn) -->
     <button
-        on:click="{() => wallet.tx('WelfareFund', 'join', inputJoiningAge, inputRetirementAge, monthlyPayIn)}">Create
+        on:click="{() => wallet.tx('Pension', 'join', inputJoiningAge, inputRetirementAge, monthlyPayIn)}">Create
         Your Plan</button>
 </footer>
