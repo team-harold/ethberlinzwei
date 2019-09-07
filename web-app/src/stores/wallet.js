@@ -15,7 +15,10 @@ function reloadPage(reason, instant) {
     }
 }
 
-const $wallet = {};
+const $wallet = {
+    status: 'Loading',
+    requestingTx: false,
+};
 export default (() => {
     const { subscribe, set, update } = writable();
     let contracts;
@@ -386,22 +389,37 @@ export default (() => {
         if (typeof args === 'undefined') {
             args = [];
         }
-        
+
         if (options && options.from && options.from.length > 42) {
             log.error('TODO : privateKey based tx');
         } else {
             if (contract) {
                 const ethersContract = contracts[contract];
                 const method = ethersContract[methodName].bind(ethersContract);
-                const tx = await method(...args, options || {}); // || defaultOptions);
-                const pendingTx = {
-                    hash: tx.hash,
-                    contractName: contract,
-                    methodName,
-                    args,
-                    options
-                };
-                emitTransaction(pendingTx, $wallet.chainId, $wallet.address);
+                
+                let tx;
+                _set({
+                    requestingTx: true,
+                });
+                try {
+                    tx = await method(...args, options || {}); // || defaultOptions);
+                } catch (e) {
+                    tx = null;
+                } finally {
+                    _set({
+                        requestingTx: false,
+                    });
+                }
+                if(tx) {
+                    const pendingTx = {
+                        hash: tx.hash,
+                        contractName: contract,
+                        methodName,
+                        args,
+                        options
+                    };
+                    emitTransaction(pendingTx, $wallet.chainId, $wallet.address);
+                }
             } else {
                 log.error('TODO send raw tx');
             }

@@ -1,5 +1,12 @@
 <script>
     import { goto } from '@sapper/app';
+
+    import wallet from '../stores/wallet';
+    import userPensionData from '../stores/userPensionData';
+
+    $: loading = $wallet.status === 'Loading' || $userPensionData.status === 'Loading';
+    $: join = !loading && ($userPensionData.status !== 'Loaded' || $userPensionData.joiningAge === 0)
+
 </script>
 <svelte:head>
     <title>Transit Fund</title>
@@ -24,8 +31,15 @@
 
 <header class="d-flex flex-column align-items-center">
     <img class="logo-img" alt="Transit" lass="logo-img" src="logo_invert.png">
-    <button on:click="{ () => goto('pension') }"><a style="display: none;" href="pension">nothing</a>Join
-        Transit</button>
+    <button on:click="{ () => goto('pension') }"><a style="display: none;" href="pension">_</a>
+        {#if loading}
+        <i class="fas fa-spinner fa-spin"></i>
+        {:else if join}
+        Join Transit
+        {:else}
+        Manage Pension
+        {/if}
+    </button>
 </header>
 
 <section class="container-fluid index-section" style="text-align: center">

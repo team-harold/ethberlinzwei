@@ -55,7 +55,13 @@
     </div>
     
 {:else if $wallet.status == 'Ready'}
+    {#if $wallet.requestingTx}
+    <div style="text-align:center">
+        <h3> Please accept the transaction request </h3>
+    </div>
+    {:else}
     <slot></slot>    
+    {/if}
 {/if}
 
 <style>

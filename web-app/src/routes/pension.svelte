@@ -26,7 +26,7 @@
 </script>
 
 <header>
-    <img alt="Transit" class="logo-img" src="logo_invert.png">
+    <a href="/"><img alt="Transit" class="logo-img" src="logo_invert.png"></a>
 </header>
     
 

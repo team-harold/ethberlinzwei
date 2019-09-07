@@ -4,6 +4,7 @@ import wallet from './wallet';
 import log from '../util/log';
 
 const $data = {
+    status: 'Loading',
     debug_timeDelta: BigNumber.from(0),
     retirementTime: BigNumber.from(0),
     contribution: BigNumber.from(0),
@@ -46,6 +47,9 @@ export default derived(wallet, ($wallet, set) => {
 
     async function startListening() {
         if (!interval) {
+            _set({
+                status: 'Loading', // TODO only if no data already available ?
+            });
             fetch();
             interval = setInterval(() => {
                 fetch();
@@ -64,9 +68,6 @@ export default derived(wallet, ($wallet, set) => {
     }
 
     if ($wallet.status === 'Ready') {
-        _set({
-            status: 'Loading', // TODO only if no data already available ?
-        });
         startListening();
     } else {
         // console.log('not ready now');
