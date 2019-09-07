@@ -8,40 +8,46 @@
     import { everySecond } from '../stores/time';
 
     // Components
-    import Create from '../components/create.svelte';
-    import Pay from '../components/pay.svelte';
-    import Dead from '../components/dead.svelte';
-    import Pending from '../components/pending.svelte';
-    import Modal from '../components/Modal.svelte';
+    import WalletWrapper from '../components/WalletWrapper'
+    import Create from '../components/Create';
+    import PayIn from '../components/PayIn';
+    import PayOut from '../components/PayOut';
+    import Dead from '../components/Dead';
+    import Message from '../components/Message';
+    import Modal from '../components/Modal';
 
-    $: timestampBN = BigNumber.from($everySecond ? $everySecond : 0);
-    $: payingIn = $userPensionData.retirementTime && $userPensionData.retirementTime.gt(timestampBN);
-    $: retired = $userPensionData.retirementTime && $userPensionData.retirementTime.lte(timestampBN);
-
-    // $: {
-    //     console.log($userPensionData.retirementTime ? $userPensionData.retirementTime.toString(10) : 0);
-    //     console.log(timestampBN.toString(10));
-    // }
+    $: timestampBN = BigNumber.from($everySecond).add($userPensionData.debug_timeDelta);
+    $: retirementTime = $userPensionData.retirementTime;
+    $: payingIn = retirementTime.gt(timestampBN);
+    $: retired = retirementTime.lte(timestampBN);
+    $: dead = false; // TODO
 
 </script>
 
-{#if $wallet.status !== 'Ready'}
-    <Pending/> <!-- TODO use WalletWrapper-->
-{:else}
+<header>
+    <img alt="Transit" class="logo-img" src="logo_invert.png">
+</header>
+    
+
+<WalletWrapper>
     {#if $userPensionData.status !== 'Loaded'}
-    <Pending message="Getting your account info!"/>
+        <Message message="Getting your account info!"/>
     {:else}
         {#if $userPensionData.joiningAge == 0}
             <Create />
         {:else}
-            {#if $userPensionData.retirementTime == 0 } <!-- TODO use eligibility oracle -->
+            {#if dead } <!-- TODO use eligibility oracle -->
                 <Dead/> <!-- TODO ineligible not dead-->
-            {:else if payingIn}
-                <Pay status={"paying"} />
             {:else if retired}
-                <Pay status={"retired"} />
+                <PayOut/>
+            {:else if payingIn}
+                <PayIn/>
+            {:else if payingIn}
+                <Message message="Error" /> <!-- TODO -->
             {/if}
         {/if}
+
+        <!-- TRANSACTION CONFIRMATIONS -->
         {#if $transactions.status === 'Loading'}
             <Modal>
                 <h4 slot="header">Checking Pending Transactions</h4>
@@ -67,5 +73,6 @@
                 </div>
             </Modal>
         {/if}
+
     {/if}
-{/if}
+</WalletWrapper>

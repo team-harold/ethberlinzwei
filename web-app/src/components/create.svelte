@@ -63,9 +63,6 @@
     }
 </style>
 
-<header>
-    <img alt="Transit" class="logo-img" src="logo_invert.png">
-</header>
 
 <section class="action-section">
     <h1> Your pension plan </h1>

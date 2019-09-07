@@ -76,23 +76,3 @@
         elderly home or your retirement community in Florida. They will have an interest to treat you well.</p>
 
 </section>
-
-<!-- <section class="index-section">
-    <h1>How does this work?</h1>
-    <h3>1) Set you Pension Plan</h3>
-    <h3>2) Pay a monthly sum (or more!) in DAI</h3>
-    <h3>3) Participate via DAO on essential governance questions.</h3>
-    <h3>4) After your established retirement age, you’ll receive monthly payments.</h3>
-</section> -->
-
-
-<!-- <div id="mc_embed_signup">
-<form action="https://gmail.us3.list-manage.com/subscribe/post?u=fc6c50d83d805226f6635b795&amp;id=2bef0efc7b" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-    <div id="mc_embed_signup_scroll">
-    <label for="mce-EMAIL">Subscribe to our Simulation starting in November</label>
-    <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
-    <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_fc6c50d83d805226f6635b795_2bef0efc7b" tabindex="-1" value=""></div>
-    <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
-    </div>
-</form>
-</div> -->

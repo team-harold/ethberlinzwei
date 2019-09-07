@@ -18,17 +18,14 @@
         return BigNumber.from(n);
     }
 
-    $: timestampBN = bn($everySecond).add($userPensionData.debug_timeDelta);
-    $: retirementTime = $userPensionData.retirementTime ? $userPensionData.retirementTime : bn(0);
-    $: payingIn = retirementTime.gt(timestampBN);
-    $: retired = retirementTime.lte(timestampBN);
+    $: retirementTime = $userPensionData.retirementTime;
 
     $: deadline = 
         $userPensionData.contribution ? 
             $userPensionData.contribution
             .div($userPensionData.payInPerMonth)
-            .add(bn(1))
-            .mul(bn(2629746))
+            .add(bn(1)) // beforePenalty
+            .mul(bn(2629746)) // seconds in a month
             .add($userPensionData.startTime) :
         0;
     
@@ -46,11 +43,6 @@
     }
 </style>
 
-<header>
-    <img alt="Transit" class="logo-img" src="logo_invert.png">
-</header>
-
-{#if payingIn}
 <section class="d-flex flex-column action-section">
 
     <div class="d-flex flex-row align-items-center my-1">
@@ -80,19 +72,3 @@
         <h5>Retiring on... <span style="color: #ff2968">{format($userPensionData.retirementTime)}</span></h5>
     </div>
 </footer>
-
-{:else}
-<section class="d-flex flex-column action-section">
-
-    <div class="d-flex flex-column align-items-center my-3">
-        <h1>🥳</h1>
-        <h5> You can withdraw <span style="color: #ff2968">{$userPensionData.payOutPerMonth}</span> DAI</h5>
-    </div>
-
-    <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
-        <button on:click="{() => wallet.tx('Pension', 'claimPayOut')}"> Withdraw</button>
-    </div>
-
-</section>
-
-{/if}

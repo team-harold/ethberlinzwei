@@ -1,8 +1,12 @@
 import { writable, readable, derived } from 'svelte/store';
+import { BigNumber } from 'ethers';
 import wallet from './wallet';
 import log from '../util/log';
 
-const $data = {};
+const $data = {
+    debug_timeDelta: BigNumber.from(0),
+    retirementTime: BigNumber.from(0),
+};
 let interval;
 export default derived(wallet, ($wallet, set) => {
     function _set(obj) {

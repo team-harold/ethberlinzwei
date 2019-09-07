@@ -1,10 +1,6 @@
 <script>
 </script>
 
-<header>
-    <img alt="Transit" class="logo-img" src="logo_invert.png">
-</header>
-
 <section class="d-flex flex-column action-section">
 
     <div class="d-flex flex-column align-items-center my-3">
