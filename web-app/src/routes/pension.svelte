@@ -16,10 +16,11 @@
     import Message from '../components/Message';
     import Modal from '../components/Modal';
 
-    $: timestampBN = BigNumber.from($everySecond).add($userPensionData.debug_timeDelta);
+    $: timestamp = BigNumber.from($everySecond).add($userPensionData.debug_timeDelta);
     $: retirementTime = $userPensionData.retirementTime;
-    $: payingIn = retirementTime.gt(timestampBN);
-    $: retired = retirementTime.lte(timestampBN);
+    $: payingIn = retirementTime.gt(timestamp);
+    $: retired = retirementTime.lte(timestamp);
+    $: payingOut = retired && $userPensionData.contribution.gte(48) 
     $: dead = false; // TODO
 
 </script>
@@ -38,12 +39,10 @@
         {:else}
             {#if dead } <!-- TODO use eligibility oracle -->
                 <Dead/> <!-- TODO ineligible not dead-->
-            {:else if retired}
+            {:else if payingOut}
                 <PayOut/>
-            {:else if payingIn}
+            {:else}
                 <PayIn/>
-            {:else if payingIn}
-                <Message message="Error" /> <!-- TODO -->
             {/if}
         {/if}
 

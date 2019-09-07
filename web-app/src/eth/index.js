@@ -65,6 +65,10 @@ export default {
         
         // TODO remove (debug)
         window.contracts = contracts;
+        window.skipMonths = async (m) => {
+            const tx = await contracts.Pension.functions.debug_addTimeDelta(m * 2629746);
+            console.log({tx});
+        };
 
         return contracts;
     },

@@ -6,6 +6,7 @@ import log from '../util/log';
 const $data = {
     debug_timeDelta: BigNumber.from(0),
     retirementTime: BigNumber.from(0),
+    contribution: BigNumber.from(0),
 };
 let interval;
 export default derived(wallet, ($wallet, set) => {

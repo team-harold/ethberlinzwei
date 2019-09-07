@@ -19,15 +19,16 @@
     }
 
     $: retirementTime = $userPensionData.retirementTime;
-
+    $: timestamp = BigNumber.from($everySecond).add($userPensionData.debug_timeDelta);
     $: deadline = 
-        $userPensionData.contribution ? 
-            $userPensionData.contribution
-            .div($userPensionData.payInPerMonth)
-            .add(bn(1)) // beforePenalty
-            .mul(bn(2629746)) // seconds in a month
-            .add($userPensionData.startTime) :
-        0;
+       $userPensionData.contribution
+        .div($userPensionData.payInPerMonth)
+        .add(bn(1)) // beforePenalty
+        .mul(bn(2629746)) // seconds in a month
+        .add($userPensionData.startTime);
+
+    $: penalty = 1; // TODO
+    $: catchup = $userPensionData.payInPerMonth.add($userPensionData.payInPerMonth.mul(timestamp.sub(deadline)).div(bn(2629746)));
     
 </script>
 
@@ -49,18 +50,26 @@
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-money-bill"></i>
         </span>
-        <h5>You next monthly payment is <span style="color: #ff2968">{$userPensionData.payInPerMonth}</span> DAI </h5>
+        {#if deadline.gt(timestamp)}
+            <h5>You next monthly payment is <span style="color: #ff2968">{$userPensionData.payInPerMonth}</span> DAI </h5>
+        {:else}
+            <h5>You are {timestamp.sub(deadline).toNumber()}s late. You have to pay <span style="color: #ff2968">{catchup}</span> DAI to catch up</h5>
+        {/if}
     </div>
 
     <div class="d-flex flex-row align-items-center my-1">
         <span style="font-size: 18px; color: #00e8d5; padding-right: 10px">
             <i class="fa fa-clock"></i>
         </span>
+        {#if deadline.gt(timestamp)}
         <h5>Your Deadline is <span style="color: #ff2968">{format(deadline)}</span></h5>
+        {:else}
+        <h5>Your penalty is <span style="color: #ff2968">{penalty}</span></h5>
+        {/if}
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
-        <button on:click="{() => wallet.tx({value: $userPensionData.payInPerMonth}, 'Pension', 'payIn')}"> Make Payment </button>
+        <button on:click="{() => wallet.tx({value: catchup}, 'Pension', 'payIn')}"> Make Payment </button>
     </div>
 
 </section>
@@ -69,6 +78,10 @@
     <div class="d-flex flex-column align-items-center my-3">
         <h1>💰</h1>
         <h5> You have saved a total of <span style="color: #ff2968">{$userPensionData.contribution}</span> DAI</h5>
+        {#if timestamp.gt(retirementTime)}
+        <h5>You are retired but you just need to pay the remaining balance</h5> <!-- TODO calculate -->
+        {:else}
         <h5>Retiring on... <span style="color: #ff2968">{format($userPensionData.retirementTime)}</span></h5>
+        {/if}
     </div>
 </footer>
