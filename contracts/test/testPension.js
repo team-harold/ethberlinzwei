@@ -18,6 +18,7 @@ const {
     fetchReceipt,
     tx,
     call,
+    expectThrow,
 } = rockethUtil;
 
 tap.test('Pension', async (t) => {
@@ -28,104 +29,46 @@ tap.test('Pension', async (t) => {
     });
 
     t.test('can join', async (t) => {
-        const trx = await tx({ from: user1, gas }, contract, 'join', 18, 60, "1000000");
-        await trx.wait();
-        // const receipt = await fetchReceipt(trx.hash)
-        // console.log(JSON.stringify(receipt, null, '  '));
+        await tx({ from: user1, gas }, contract, 'join', 18, 60, "1000000");
+        const { joiningAge } = await call(contract, 'getPersonData', user1);
+        assert.equal(joiningAge, 18);
     })
 
     t.test('can pay in', async (t) => {
-        let trx;
-        trx = await tx({ from: user1, gas }, contract, 'join', 18, 60, "1000000");
-        // console.log(trx);
-        await trx.wait();
+        await tx({ from: user1, gas }, contract, 'join', 18, 60, "1000000");
         await tx({ from: user1, gas, value: 1000 }, contract, 'payIn');
+        const { contribution } = await call(contract, 'getPersonData', user1);
+        assert.equal(contribution, 1000);
     })
 
-    function wait(t) {
-        return new Promise((resolve, reject) => {
-            setTimeout(resolve, t * 1000);
-        })
-    }
+    t.test('can claim payOut after paying in all and after retirement time', async (t) => {
+        await tx({ from: user1, gas }, contract, 'join', 18, 60, "10");
+        
+        const numMonths = (60 - 18) * 12;
+        const numSeconds = numMonths * 2629746;
+        const payIn = 10 * numMonths * 2;
+        const payInBN = new BN(payIn);        
+        await tx({ from: user1, gas, value: '0x' + payInBN.toString(16) }, contract, 'payIn');
+        
+        await tx({ from: deployer, gas }, contract, 'debug_addTimeDelta', numSeconds);
 
-    t.test('can pay out', async (t) => {
-        let trx;
-        trx = await tx({ from: user1, gas }, contract, 'join', 18, 60, "10");
-        await trx.wait();
-        await wait(0.5);
-        // const payIn = new BN(annuity.default.payInPerMonth(18, 60, 1000000));
+        const balanceBefore = await getBalance(user1);
+        await tx({ from: user1, gas }, contract, 'claimPayOut');
+        const balanceAfter = await getBalance(user1);
+        // assert.equal(balanceAfter, balanceBefore + x); // TODO
+    })
+
+    t.test('cannot claim payOut before retirement', async (t) => {
+        await tx({ from: user1, gas }, contract, 'join', 18, 60, "10");
+
         const numMonths = (60 - 18) * 12;
         const numSeconds = numMonths * 2629746;
         const payIn = 10 * numMonths * 2;
         const payInBN = new BN(payIn);
-        console.log({ payIn, payInS: payInBN.toString('hex') });
-
-        let personData;
-        personData = await call(contract, 'getPersonData', user1);
-        console.log({ personData });
-
-        trx = await tx({ from: user1, gas, value: '0x' + payInBN.toString(16) }, contract, 'payIn');
-        await trx.wait();
-        await wait(0.5);
-
-        personData = await call(contract, 'getPersonData', user1);
-        console.log({ personData });
-
-        trx = await tx({ from: deployer, gas }, contract, 'debug_addTimeDelta', numSeconds);
-        await trx.wait();
-        await wait(0.5);
-
-        personData = await call(contract, 'getPersonData', user1);
-        console.log({ personData });
-
-        const balanceBefore = await getBalance(user1);
-
-        trx = await tx({ from: user1, gas }, contract, 'claimPayOut');
-        await trx.wait();
-
-
-        const balanceAfter = await getBalance(user1);
-
-        console.log({ balanceBefore, balanceAfter });
-    })
-
-    t.test('can pay out', async (t) => {
-        let trx;
-        trx = await tx({ from: user1, gas }, contract, 'join', 18, 60, "10");
-        // const payIn = new BN(annuity.default.payInPerMonth(18, 60, 1000000));
-        const numMonths = (60 - 18) * 12;
-        const numSeconds = numMonths * 2629746;
-        const payIn = 10 * numMonths * 2;
-        const payInBN = new BN(payIn);
-        console.log({ payIn, payInS: payInBN.toString('hex') });
-
-        let personData;
-        personData = await call(contract, 'getPersonData', user1);
-        console.log({ personData });
-
-        trx = await tx({ from: user1, gas, value: '0x' + payInBN.toString(16) }, contract, 'payIn');
-        await trx.wait();
-        await wait(0.5);
-
-        personData = await call(contract, 'getPersonData', user1);
-        console.log({ personData });
-
-        // trx = await tx({ from: deployer, gas }, contract, 'debug_addTimeDelta', numSeconds);
-        // await trx.wait();
-        // await wait(0.5);
-
-        personData = await call(contract, 'getPersonData', user1);
-        console.log({ personData });
-
-        const balanceBefore = await getBalance(user1);
-
-        trx = await tx({ from: user1, gas }, contract, 'claimPayOut');
-        await trx.wait();
-
-
-        const balanceAfter = await getBalance(user1);
-
-        console.log({ balanceBefore, balanceAfter });
+        
+        await tx({ from: user1, gas, value: '0x' + payInBN.toString(16) }, contract, 'payIn');
+        
+        await expectThrow(tx({ from: user1, gas }, contract, 'claimPayOut'));
     })
 
 })
