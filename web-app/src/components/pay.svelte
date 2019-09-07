@@ -1,8 +1,9 @@
 <script>
+    import { BigNumber } from 'ethers';
+
     import wallet from '../stores/wallet';
     import userPensionData from '../stores/userPensionData';
     import { everySecond } from '../stores/time';
-    export let status;
 
     function getDateString(time) {
         let d = new Date(time)
@@ -14,13 +15,15 @@
     }
 
     function bn(n) {
-        return window.ethers.utils.bigNumberify(n);
+        return BigNumber.from(n);
     }
 
-    $: timestampBN = bn($everySecond);
+    $: timestampBN = bn($everySecond +  $userPensionData.debug_timeDelta);
     $: retirementTime = $userPensionData.retirementTime ? $userPensionData.retirementTime : bn(0);
     $: payingIn = retirementTime.gt(timestampBN);
     $: retired = retirementTime.lte(timestampBN);
+
+    $: console.log({retired, payingIn, retirementTime});
 
     $: deadline = 
         $userPensionData.contribution ? 
@@ -49,7 +52,7 @@
     <img alt="Transit" class="logo-img" src="logo_invert.png">
 </header>
 
-{#if status == 'paying'}
+{#if payingIn}
 <section class="d-flex flex-column action-section">
 
     <div class="d-flex flex-row align-items-center my-1">
@@ -89,7 +92,7 @@
     </div>
 
     <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
-        <button on:click="{() => wallet.tx('WelfareFund', 'claimPayout')}"> Withdraw</button>
+        <button on:click="{() => wallet.tx('Pension', 'claimPayOut')}"> Withdraw</button>
     </div>
 
 </section>

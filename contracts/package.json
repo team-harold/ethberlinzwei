@@ -10,7 +10,7 @@
     "smartcheck": "smartcheck -p ."
   },
   "dependencies": {
-    "ethers": "^4.0.36",
+    "ethers": "^5.0.0-beta.155",
     "ganache-core": "^2.7.0",
     "rocketh": "^0.2.43",
     "rocketh-ethers": "^0.0.2",

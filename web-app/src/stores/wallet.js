@@ -293,16 +293,26 @@ export default (() => {
         //     throw new Error('Can\'t perform tx');
         // }
         if (typeof options === 'string') {
-            args.unshift(methodName);
+            if(typeof methodName !== 'undefined') {
+                args.unshift(methodName);
+            }
             methodName = contract;
             contract = options;
             options = undefined;
         }
 
+        if (typeof args === 'undefined') {
+            args = [];
+        }
+
         if (contract) {
             const ethersContract = contracts[contract];
             const method = ethersContract.functions[methodName].bind(ethersContract);
-            return method(...args, options || {}); // || defaultOptions);
+            if(args.length > 0) {
+                return method(...args, options || {}); // || defaultOptions);
+            } else {
+                return method(options || {}); // || defaultOptions);
+            }
         } else {
             log.error('TODO send raw call');
         }
@@ -365,11 +375,18 @@ export default (() => {
             throw new Error('Can\'t perform tx');
         }
         if (typeof options === 'string') {
-            args.unshift(methodName);
+            if(typeof methodName !== 'undefined') {
+                args.unshift(methodName);
+            }
             methodName = contract;
             contract = options;
             options = undefined;
         }
+
+        if (typeof args === 'undefined') {
+            args = [];
+        }
+        
         if (options && options.from && options.from.length > 42) {
             log.error('TODO : privateKey based tx');
         } else {

@@ -23,6 +23,8 @@ export default derived(wallet, ($wallet, set) => {
         const stages = ['retired', 'paying', 'dead'];
         // TODO fetch on specific block (BlockBeat)
         const personData = await wallet.call('Pension', 'getPersonData', $wallet.address);
+
+        const debug_timeDelta = await wallet.call('Pension', 'getTimeDelta');
         _set({
             status: 'Loaded',
             // TODO block,
@@ -33,6 +35,7 @@ export default derived(wallet, ($wallet, set) => {
             startTime: personData.startTime,
             contribution: personData.contribution,
             totalPaidOut: personData.totalPaidOut,
+            debug_timeDelta
         });
     }
 

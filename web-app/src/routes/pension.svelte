@@ -1,4 +1,6 @@
 <script>
+    import { BigNumber } from 'ethers';
+
     // Stores
     import wallet from '../stores/wallet';
     import userPensionData from '../stores/userPensionData';
@@ -12,7 +14,7 @@
     import Pending from '../components/pending.svelte';
     import Modal from '../components/Modal.svelte';
 
-    $: timestampBN = process.browser ? window.ethers.utils.bigNumberify($everySecond ? $everySecond : 0) : 0;
+    $: timestampBN = BigNumber.from($everySecond ? $everySecond : 0);
     $: payingIn = $userPensionData.retirementTime && $userPensionData.retirementTime.gt(timestampBN);
     $: retired = $userPensionData.retirementTime && $userPensionData.retirementTime.lte(timestampBN);
 

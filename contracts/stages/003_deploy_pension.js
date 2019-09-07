@@ -16,7 +16,7 @@ module.exports = async ({ chainId, accounts, initialRun, namedAccounts, register
     );
 
     if (initialRun) {
-        console.log(contractName + ' deployed used  ' + deployResult.receipt.gasUsed.toString(10) + ' gas');
+        console.log(contractName + ' deployed used  ' + deployResult.receipt.gasUsed.toString() + ' gas');
     }
 
     await tx({ from: deployer, gas }, deployResult.contract, 'init');
