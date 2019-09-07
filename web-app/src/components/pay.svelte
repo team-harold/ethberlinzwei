@@ -18,12 +18,10 @@
         return BigNumber.from(n);
     }
 
-    $: timestampBN = bn($everySecond +  $userPensionData.debug_timeDelta);
+    $: timestampBN = bn($everySecond).add($userPensionData.debug_timeDelta);
     $: retirementTime = $userPensionData.retirementTime ? $userPensionData.retirementTime : bn(0);
     $: payingIn = retirementTime.gt(timestampBN);
     $: retired = retirementTime.lte(timestampBN);
-
-    $: console.log({retired, payingIn, retirementTime});
 
     $: deadline = 
         $userPensionData.contribution ? 

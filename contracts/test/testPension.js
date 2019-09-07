@@ -2,7 +2,7 @@ const tap = require('tap')
 const rocketh = require('rocketh');
 const rockethUtil = require('rocketh-ethers')(rocketh, require('ethers'));
 const assert = require('assert');
-const annuity = require('../../web-app/src/math/annuity');
+const annuity = require('../../web-app/src/math/annuity').default;
 const BN = require('bn.js');
 
 const accounts = rocketh.accounts;
@@ -39,6 +39,12 @@ tap.test('Pension', async (t) => {
         await tx({ from: user1, gas, value: 1000 }, contract, 'payIn');
         const { contribution } = await call(contract, 'getPersonData', user1);
         assert.equal(contribution, 1000);
+    })
+
+    t.test('payout is calculated correctly', async (t) => {
+        await tx({ from: user1, gas }, contract, 'join', 18, 60, "10");
+        const { payOutPerMonth } = await call(contract, 'getPersonData', user1);
+        assert.equal(payOutPerMonth.toNumber(), annuity.payOutPerMonth(60, 18, 10));
     })
 
     t.test('can claim payOut after paying in all and after retirement time', async (t) => {

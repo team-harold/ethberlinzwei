@@ -10,10 +10,10 @@
     "smartcheck": "smartcheck -p ."
   },
   "dependencies": {
-    "ethers": "^5.0.0-beta.155",
+    "ethers": "^5.0.0-beta.156",
     "ganache-core": "^2.7.0",
     "rocketh": "^0.2.43",
-    "rocketh-ethers": "^0.0.2",
+    "rocketh-ethers": "^0.0.3",
     "solc": "^0.5.11",
     "tap": "^14.6.1"
   },
