@@ -136,7 +136,7 @@
     "@ethersproject/logger" ">=5.0.0-beta.129"
     "@ethersproject/properties" ">=5.0.0-beta.131"
 
-"@ethersproject/address@>=5.0.0-beta.128", "@ethersproject/address@https://github.com/wighawag/ethersproject-address.git#c36db87c0ea2353f0f0a5b5d53d5f9152199d45b":
+"@ethersproject/address@>=5.0.0-beta.128":
   version "5.0.0-beta.128"
   resolved "https://github.com/wighawag/ethersproject-address.git#c36db87c0ea2353f0f0a5b5d53d5f9152199d45b"
   dependencies:
@@ -3217,10 +3217,10 @@ ethers@^4.0.26:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.0.0-beta.156:
-  version "5.0.0-beta.156"
-  resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.0.0-beta.156.tgz#dea860455863f9c35b71a97c5b62fac415eedf08"
-  integrity sha512-xgat1HpvhulExN49w/5gad71/MA9g8OLQXObX4VTKZf4OR5+03W6zbGY45vWrj3MFB8lZWHqjD1annkRUkcqMQ==
+ethers@^5.0.0-beta.157:
+  version "5.0.0-beta.157"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.0.0-beta.157.tgz#1831450ab50347afee77da5818421d73716920d8"
+  integrity sha512-MuSUz58RhKdp0rpCTuCHq8SVF53Jp6vXZ9/B3+7hieqasZHj4Payg5HcFZORovElCAX5EcJu4u2KhAO8wFFJbA==
   dependencies:
     "@ethersproject/abi" ">=5.0.0-beta.137"
     "@ethersproject/abstract-provider" ">=5.0.0-beta.131"
