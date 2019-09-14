@@ -26,7 +26,7 @@
 </script>
 
 <header>
-    <a href="/"><img alt="Transit" class="logo-img" src="logo_invert.png"></a>
+    <a href="/"><img alt="Transit" src="logo_invert.png"></a>
 </header>
     
 
@@ -50,8 +50,8 @@
         {#if $transactions.status === 'Loading'}
             <Modal>
                 <h4 slot="header">Checking Pending Transactions</h4>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                <div >
+                    <div  
                         role="progressbar" 
                         aria-valuenow="100" 
                         aria-valuemin="0" 
@@ -62,8 +62,8 @@
         {:else if $transactions.numUnConfirmed > 0}
             <Modal>
                 <h4 slot="header">Transaction in Porgress</h4>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                <div >
+                    <div  
                         role="progressbar" 
                         aria-valuenow="100" 
                         aria-valuemin="0" 

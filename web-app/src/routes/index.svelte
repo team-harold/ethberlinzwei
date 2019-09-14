@@ -12,64 +12,53 @@
     <title>Transit Fund</title>
 </svelte:head>
 
-<style>
-    header {
-        padding-bottom: 2rem;
-        border-bottom: 1px solid #f2f2fa;
-    }
 
-    button {
-        background: transparent;
-        border: #00e8d5 1px solid;
-        color: #00e8d5;
-    }
-
-    .index-section {
-        padding: 2rem
-    }
-</style>
-
-<header class="d-flex flex-column align-items-center">
-    <img class="logo-img" alt="Transit" lass="logo-img" src="logo_invert.png">
-    <button on:click="{ () => goto('pension') }"><a style="display: none;" href="pension">_</a>
-        {#if loading}
-        <i class="fas fa-spinner fa-spin"></i>
-        {:else if join}
-        Join Transit
-        {:else}
-        Manage Pension
-        {/if}
-    </button>
+<header>
+    <div class="flex justify-center">
+        <img class="p-6 max-w-sm" alt="Transit" src="logo_invert.png">
+    </div>
+    <div class="py-6 flex justify-center">
+        <a class="button p-1 w-48 border rounded-lg border-logo1 text-logo1" href="pension">
+            {#if loading}
+            <div class="lds-dual-ring p2"></div>
+            {:else if join}
+            JOIN Transit
+            {:else}
+            Manage Pension
+            {/if}
+        </a>
+    </div>
 </header>
 
-<section class="container-fluid index-section" style="text-align: center">
+<section>
 
-    <h1>What is Transit?</h1>
-    <div class="row">
+    <div><h1>What is Transit?</h1></div>
+    
+    <div class="flex flex-wrap" >
 
-        <div class="col-sm">
-            <span style="font-size: 47px; color: #00e8d5; padding-right: 10px">
-                <i class="fas fa-users"></i>
+        <div class="w-full sm:w-1/3">
+            <span >
+                <i ></i>
             </span>
-            <h4 class="h5"> Transit is a cooperatively owned Pension Plan based on the Ethereum Network</h4>
+            <h4 > Transit is a cooperatively owned Pension Plan based on the Ethereum Network</h4>
         </div>
-        <div class="col-sm">
-            <span style="font-size: 47px; color: #00e8d5; padding-right: 10px">
-                <i class="fas fa-dharmachakra"></i>
+        <div class="w-full md:w-1/3">
+            <span >
+                <i ></i>
             </span>
-            <h4 class="h5">No stockholders. No corporations. Run entirely by those who invest in it</h4>
+            <h4 >No stockholders. No corporations. Run entirely by those who invest in it</h4>
         </div>
-        <div class="col-sm">
-            <span style="font-size: 47px; color: #00e8d5; padding-right: 10px">
-                <i class="far fa-hand-point-down"></i>
+        <div class="w-full md:w-1/3">
+            <span >
+                <i ></i>
             </span>
-            <h4 class="h5">YOU decide on your future financial security.</h4>
+            <h4 >YOU decide on your future financial security.</h4>
         </div>
     </div>
 
 </section>
 
-<section class="index-section" style="background: #616161">
+<section >
 
     <h1>Why Transit</h1>
     <h2> Cost </h2>

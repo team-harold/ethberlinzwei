@@ -1,0 +1,23 @@
+/* .btn {
+    @apply inline-block font-bold py-2 px-4 rounded no-underline;
+}
+
+.btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+}
+
+.btn-primary {
+    @apply bg-primary text-primary;
+}
+
+.btn-primary:hover {
+    @apply bg-secondary;
+} */
+
+.button {
+    @apply inline-block py-2 px-4 rounded no-underline flex justify-center
+}
+
+/* .button-primary {
+    
+} */

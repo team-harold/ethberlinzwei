@@ -37,86 +37,60 @@
     });
 </script>
 
-<style>
-    .harold-form {
-        width: 50px;
-    }
 
-    #harold-ages {
-        border-bottom: #616161 solid 1px;
-    }
-
-    label {
-        font-size: 20px;
-        margin: 10px 0 10px 0;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        border: 1px solid #ffffff;
-        height: 18px;
-        width: 18px;
-        border-radius: 2px;
-        background: #ff2968;
-        cursor: pointer;
-        box-shadow: 1px 1px 1px #616161, 0px 0px 1px #0d0d0d;
-    }
-</style>
-
-
-<section class="action-section">
+<section >
     <h1> Your pension plan </h1>
 
-    <div class="d-flex flex-row align-items-center mb-1">
-        <span style="font-size: 15px; color: #00e8d5; padding-right: 10px">
-            <i class="fas fa-user-astronaut"></i>
+    <div >
+        <span >
+            <i ></i>
         </span>
         <h4 id='account'>
             {($wallet.address && $wallet.status == 'Ready') ? $wallet.address : 'Web3 account not available'}</h4>
     </div>
 
-    <form id="harold-ages" class="d-flex flex-row justify-content-between py-3">
-        <div class="d-flex flex-column mb-3 align-items-start">
-            <h3 class="bd-highlight">Your age</h3>
-            <input type="text" class="harold-form" bind:value={inputJoiningAge}>
+    <form id="harold-ages" >
+        <div >
+            <h3 >Your age</h3>
+            <input type="text"  bind:value={inputJoiningAge}>
         </div>
 
-        <div class="d-flex flex-column mb-3 align-items-start">
-            <h3 class="bd-highlight">Retirement age</h3>
-            <input type="text" class="harold-form" bind:value={inputRetirementAge}>
+        <div >
+            <h3 >Retirement age</h3>
+            <input type="text"  bind:value={inputRetirementAge}>
         </div>
     </form>
 
 </section>
 
 
-<section class="py-3 d-flex flex-column justify-content-between action-section">
+<section >
 
-    <div class="d-flex flex-row align-items-center mb-1">
-        <span style="font-size: 20px; color: #00e8d5; padding-right: 10px">
-            <i class="fa fa-wallet"></i>
+    <div >
+        <span >
+            <i ></i>
         </span>
-        <label for="monthlyPayInRange">Monthly Pay In: <span style="color: #ff2968">{monthlyPayIn.toFixed(1)}</span>
+        <label for="monthlyPayInRange">Monthly Pay In: <span >{monthlyPayIn.toFixed(1)}</span>
             DAI</label>
     </div>
 
-    <input bind:value={monthlyPayIn} type="range" class="custom-range" id="monthlyPayInRange" min="1" max="10000">
+    <input bind:value={monthlyPayIn} type="range" >
 
-    <h2 class="py-4 my-1"><em> {yearsTillRetire} </em></h2>
+    <h2 ><em> {yearsTillRetire} </em></h2>
 
-    <div class="d-flex flex-row justify-content-start align-items-center mb-1">
-        <span style="font-size: 20px; color: #00e8d5; padding-right: 10px">
-            <i class="fa fa-money-bill-alt"></i>
+    <div >
+        <span >
+            <i ></i>
         </span>
-        <label for="monthlyPayInRange">Monthly Pay Out: <span style="color: #ff2968">{monthlyPayOut.toFixed(1)}</span>
+        <label for="monthlyPayInRange">Monthly Pay Out: <span >{monthlyPayOut.toFixed(1)}</span>
             DAI</label>
     </div>
 
-    <input bind:value={monthlyPayOut} type="range" class="custom-range" id="monthlyPayInRange" min="1" max="100000">
+    <input bind:value={monthlyPayOut} type="range" >
 
 </section>
 
-<footer class="text-center mt-5">
+<footer >
     <!-- join: async (joiningAge, retirementAge, monthlyPayIn) -->
     <button
         on:click="{() => wallet.tx('Pension', 'join', inputJoiningAge, inputRetirementAge, monthlyPayIn)}">Create

@@ -16,26 +16,15 @@
     
 </script>
 
-<style>
-    h5 {
-        color: #f7f7fa;
-        font-size: 18px;
-        margin: 0
-    }
 
-    #payin-btn {
-        border-bottom: 1px solid #f2f2fa;
-    }
-</style>
+<section >
 
-<section class="d-flex flex-column action-section">
-
-    <div class="d-flex flex-column align-items-center my-3">
+    <div >
         <h1>🥳</h1>
-        <h5> You can withdraw <span style="color: #ff2968">{$userPensionData.payOutPerMonth}</span> DAI</h5>
+        <h5> You can withdraw <span >{$userPensionData.payOutPerMonth}</span> DAI</h5>
     </div>
 
-    <div id="payin-btn" class="d-flex flex-column align-items-center py-5">
+    <div id="payin-btn" >
         <button on:click="{() => wallet.tx('Pension', 'claimPayOut')}"> Withdraw</button>
     </div>
 

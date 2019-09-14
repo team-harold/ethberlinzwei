@@ -3,3 +3,4 @@ public/bundle.*
 __sapper__/
 _export/
 src/dev_contractsInfo.json
+# static/global.css
